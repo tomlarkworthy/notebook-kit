@@ -104,7 +104,7 @@ export function observable({
           if (mode === "md" && !hidden) {
             const template = parseTemplate(value);
             if (!template.expressions.length && !cell.output) statics.add(cell);
-            const content = md([stripExpressions(template, value)]);
+            const content = md([unescapeDollarBackslashCurly(stripExpressions(template, value))]);
             const codes = content.querySelectorAll<HTMLElement>("code[class^=language-]");
             await Promise.all(Array.from(codes, highlight));
             div.appendChild(content);
@@ -246,6 +246,10 @@ function stripExpressions(template: TemplateLiteral, input: string): string {
     index = q.end;
   }
   return String(source);
+}
+
+function unescapeDollarBackslashCurly(input: string): string {
+  return input.replace(/(\$\\*)\\({)/g, "$1$2");
 }
 
 /** Returns true if the specified character is preceded by an equals sign, ignoring whitespace. */
