@@ -57,7 +57,7 @@ function getColumnType(type: DuckDBType): ColumnSchema["type"] {
     case UBIGINT:
     case HUGEINT:
     case UHUGEINT:
-      return "bigint";
+      return "integer"; // TODO bigint?
     case FLOAT:
     case DOUBLE:
       return "number";

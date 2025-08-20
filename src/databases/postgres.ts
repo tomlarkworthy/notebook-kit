@@ -41,7 +41,7 @@ function getColumnSchema(column: Column<string>): ColumnSchema {
 function getColumnType(oid: number): ColumnSchema["type"] {
   switch (oid) {
     case 20: // int8
-      return "bigint";
+      return "integer"; // TODO bigint?
     case 21: // int2
     case 23: // int4
     case 26: // oid
