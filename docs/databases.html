@@ -106,7 +106,6 @@
     Plot.plot({
       padding: 0,
       label: null,
-      x: {tickFormat: ((f) => (d) => d % 3 ? null : f(Date.UTC(2001, 0, 1, d)))(d3.utcFormat("%I %p"))},
       y: {tickFormat: Plot.formatWeekday("en")},
       color: {scheme: "ylorrd", label: "Number of trips", zero: true, legend: true},
       marks: [Plot.rect(trips_heatmap, {x: "hour", y: "dow", fill: "count", inset: 0.5, tip: true})]
