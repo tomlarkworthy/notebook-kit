@@ -89,7 +89,7 @@ function revive({rows, schema, date, ...meta}: SerializableQueryResult): QueryRe
         for (const row of rows) {
           const value = row[name] as string | null;
           if (value == null) continue;
-          row[name] = BigInt(value);
+          row[name] = Number(value); // TODO BigInt?
         }
         break;
       }
