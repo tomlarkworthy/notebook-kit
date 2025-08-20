@@ -59,8 +59,8 @@
   </script>
   <script id="37" type="application/sql" pinned="" database="duckdb" output="three">
     SELECT 1 AS foo
-      UNION ALL SELECT 2
-      UNION ALL SELECT 3
+    UNION ALL SELECT 2
+    UNION ALL SELECT 3
   </script>
   <script id="39" type="text/markdown">
     Here is the result:
@@ -69,15 +69,15 @@
     three
   </script>
   <script id="49" type="text/markdown">
-    **show me a more interesting example.** okay, how about a quick look at a dataset of 20M taxi rides? here's how you can count the number of trips per hour.
+    **show me a more interesting example.** okay, how about a quick look at a dataset of 20M taxi rides? here's how you can count the number of trips per hour. (data via [NYC Taxi & Limousine Commission](https://www.nyc.gov/site/tlc/about/tlc-trip-record-data.page), june 2025)
   </script>
   <script id="3" type="application/sql" pinned="" database="duckdb" output="trips">
     SELECT
       DATE_TRUNC('hour', pickup_datetime) AS date,
       COUNT(*) AS count
-      FROM read_parquet("https://d37ci6vzurychx.cloudfront.net/trip-data/fhvhv_tripdata_2025-06.parquet")
-      GROUP BY 1
-      ORDER BY 1 DESC;
+    FROM read_parquet("fhvhv_tripdata_2025-06.parquet")
+    GROUP BY 1
+    ORDER BY 1 DESC
   </script>
   <script id="5" type="module" pinned="">
     Plot.plot({
@@ -98,9 +98,9 @@
       EXTRACT(dow FROM pickup_datetime) AS dow,
       EXTRACT(hour FROM pickup_datetime) AS hour,
       COUNT(*) AS count
-    FROM read_parquet("https://d37ci6vzurychx.cloudfront.net/trip-data/fhvhv_tripdata_2025-06.parquet")
+    FROM read_parquet("fhvhv_tripdata_2025-06.parquet")
     GROUP BY 1, 2
-    ORDER BY 1, 2;
+    ORDER BY 1, 2
   </script>
   <script id="56" type="module" pinned="">
     Plot.plot({
