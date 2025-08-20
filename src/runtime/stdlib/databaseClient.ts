@@ -98,7 +98,7 @@ function revive({rows, schema, date, ...meta}: SerializableQueryResult): QueryRe
         for (const row of rows) {
           const value = row[name] as string | null;
           if (value == null) continue;
-          row[name] = new Date(value);
+          row[name] = asDate(value);
         }
         break;
       }
@@ -106,6 +106,10 @@ function revive({rows, schema, date, ...meta}: SerializableQueryResult): QueryRe
   }
   if (date != null) date = new Date(date);
   return Object.assign(rows, {schema, date}, meta);
+}
+
+function asDate(value: string): Date {
+  return new Date(/^\d{4}-\d{2}-\d{2} \d{2}:\d{2}(?::\d{2})?$/.test(value) ? value + "Z" : value);
 }
 
 DatabaseClient.hash = hash;
