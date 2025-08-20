@@ -4,6 +4,8 @@ export type DatabaseConfig = DuckDBConfig | SnowflakeConfig | PostgresConfig;
 
 export type DuckDBConfig = {
   type: "duckdb";
+  path?: string;
+  options?: {[key: string]: string}; // https://duckdb.org/docs/stable/configuration/overview.html
 };
 
 export type SnowflakeConfig = {

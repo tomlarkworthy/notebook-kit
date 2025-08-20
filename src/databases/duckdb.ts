@@ -1,15 +1,18 @@
 import type {DuckDBResult, DuckDBType, Json} from "@duckdb/node-api";
-import {DuckDBConnection} from "@duckdb/node-api";
+import {DuckDBConnection, DuckDBInstance} from "@duckdb/node-api";
 import {BIGINT, BIT, BLOB, BOOLEAN, DATE, DOUBLE, FLOAT, HUGEINT, INTEGER, INTERVAL, SMALLINT, TIME, TIMESTAMP, TIMESTAMP_MS, TIMESTAMP_NS, TIMESTAMP_S, TIMESTAMPTZ, TINYINT, UBIGINT, UHUGEINT, UINTEGER, USMALLINT, UTINYINT, UUID, VARCHAR, VARINT} from "@duckdb/node-api"; // prettier-ignore
+import {join} from "node:path";
 import type {DatabaseContext, DuckDBConfig, QueryTemplateFunction} from "./index.js";
 import type {ColumnSchema} from "../runtime/index.js";
 
 export default function duckdb(
-  _options: DuckDBConfig,
+  {path, options}: DuckDBConfig,
   context: DatabaseContext
 ): QueryTemplateFunction {
+  if (path !== undefined) path = join(context.cwd, path);
   return async (strings, ...params) => {
-    const connection = await DuckDBConnection.create();
+    const instance = await DuckDBInstance.create(path, options);
+    const connection = await DuckDBConnection.create(instance);
     await connection.run(`SET file_search_path=$0`, [context.cwd]);
     const date = new Date();
     let result: DuckDBResult;
@@ -22,6 +25,7 @@ export default function duckdb(
       rows = await result.getRowObjectsJson();
     } finally {
       connection.disconnectSync();
+      instance.closeSync();
     }
     return {
       rows,
