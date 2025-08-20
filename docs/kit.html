@@ -69,8 +69,18 @@
   <script id="60" type="text/markdown">
     The cell <code class="language-html">&lt;script&gt;</code> element should use four spaces of indentation for each line; these four leading spaces are trimmed when parsing the notebook. (In the future, we'll likely make this contextual to allow varied indentation.)
   </script>
+  <script id="73" type="text/markdown">
+    The <code class="language-html">&lt;script&gt;</code> element supports the following attributes:
+
+    - `type` - the cell type (also known as the cell language or cell mode)
+    - `pinned` - if present, show the cell's source code
+    - `hidden` - if present, suppress the cell's implicit display
+    - `output` - for non-JavaScript cells, how to expose the value
+    - `database` - for SQL cells, which database to query
+    - `id` - the cell identifier, for stable editing (optional)
+  </script>
   <script id="49" type="text/markdown">
-    The `type` attribute determines each cell's mode, which can be one of:
+    The `type` attribute can have one of the following values:
 
     - `module` - JavaScript
     - `text/markdown` - Markdown
@@ -113,7 +123,7 @@
     A SQL (`application/sql`) cell:
 
     ```html
-    <script type="application/sql">
+    <script type="application/sql" database="reporting">
       SELECT * FROM customers
     <\/script>
     ```
@@ -149,13 +159,19 @@
     ```
   </script>
   <script id="51" type="text/markdown">
-    The `pinned` attribute determines whether to show the cell's source code; it defaults to true for JavaScript cells, and false for all other cells. Cells can also have an `id` attribute to indicate a unique (positive integer) identifier; an `id` isn't required, but gives cells a stable identity for editing.
+    The `pinned` attribute determines whether to show the cell's source code. The `hidden` attribute suppresses the cell's implicit display; for example, you can use it hide a SQL cell's results table. Cells can also have an `id` attribute to indicate a unique (positive integer) identifier; an `id` isn't required, but gives cells a stable identity for editing.
   </script>
   <script id="53" type="text/markdown">
     Since each cell is specified as a <code class="language-html">&lt;script&gt;</code> element, if the cell source code contains a `<\/script>`, it must be escaped with a backslash as `<\\/script>`. Likewise, a sequence of backslashes in this context must be escaped with an additional backslash, such as `<\\\/script>`.
   </script>
+  <script id="75" type="text/markdown">
+    The <code class="language-html">&lt;notebook&gt;</code> element supports the following attributes:
+
+    - `theme` - the theme
+    - `readonly` - if present, disallow editing
+  </script>
   <script id="57" type="text/markdown">
-    The `notebook` element `theme` attribute specifies the theme; and may have one of the following values:
+    The `theme` attribute may have one of the following values:
 
     - `air` (default)
     - `coffee`
@@ -171,7 +187,7 @@
     - `stark`
     - `sun-faded`
 
-    See [Observable Framework's themes](https://observablehq.com/framework/themes) for a visual overview. More themes may be added in the future, and custom themes can be applied using standard stylesheets.
+    See [Observable Framework](https://observablehq.com/framework/themes) for theme previews. More themes may be added in the future. Built-in themes can be augmented using standard stylesheets.
   </script>
   <script id="56" type="text/markdown">
     See [`notebook.ts`](https://github.com/observablehq/notebook-kit/blob/main/src/lib/notebook.ts) for TypeScript types representing notebooks and cells.
