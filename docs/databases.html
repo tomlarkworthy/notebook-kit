@@ -102,7 +102,7 @@
     SELECT
       dayofweek(pickup_datetime) AS dow,
       hour(pickup_datetime) AS hour,
-      COUNT(*) / COUNT(DISTINCT date(pickup_datetime)) AS count
+      COUNT(*) / COUNT(DISTINCT date(pickup_datetime)) AS rate
     FROM read_parquet("fhvhv_tripdata_2025-06.parquet")
     GROUP BY 1, 2
     ORDER BY 1, 2
@@ -116,14 +116,14 @@
       label: null,
       y: {tickFormat: Plot.formatWeekday("en")},
       color: {scheme: "ylorrd", label: "Trips per hour (avg.)", zero: true, legend: true},
-      marks: [Plot.rect(trips_heatmap, {x: "hour", y: "dow", fill: "count", inset: 0.5, tip: true})]
+      marks: [Plot.rect(trips_heatmap, {x: "hour", y: "dow", fill: "rate", inset: 0.5, tip: true})]
     })
   </script>
   <script id="16" type="text/markdown">
     **My data is sensitive; where does it go when I run a query?** Database connectors run locally on your computer, so your data stays private. You can access databases on your local machine or private networks without going through Observable servers. If you are using DuckDB, you can read local files in the same directory as your notebook.
   </script>
   <script id="43" type="text/markdown">
-    **My database credentials are sensitive! How do i keep them secure?** Because the `databases.json` file typically contains credentials, it should not be committed to source control. We recommend excluding the entire `.observable` directory by adding it to your `.gitignore`, like so:
+    **My database credentials are sensitive! How do I keep them secure?** Because the `databases.json` file typically contains credentials, it should not be committed to source control. We recommend excluding the entire `.observable` directory by adding it to your `.gitignore`, like so:
 
     ```gitignore
     .observable
