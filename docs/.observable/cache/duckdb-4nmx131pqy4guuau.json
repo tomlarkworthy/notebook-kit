@@ -1,1 +1,1 @@
-{"rows":[{"foo":1},{"foo":2},{"foo":3}],"schema":[{"name":"foo","type":"integer"}],"duration":4,"date":"2025-08-20T21:32:36.252Z"}
+{"rows":[{"foo":1},{"foo":2},{"foo":3}],"schema":[{"name":"foo","type":"integer"}],"duration":2,"date":"2025-08-21T00:34:07.900Z"}
