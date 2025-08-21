@@ -1,0 +1,34 @@
+export interface SluggifyOptions {
+  length?: number;
+  fallback?: string;
+  separator?: string;
+}
+
+export function sluggify(
+  string: string,
+  {length = 50, fallback = "untitled", separator = "-"}: SluggifyOptions = {}
+): string {
+  const parts = string
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f'‘’]/g, "")
+    .toLowerCase()
+    .split(/\W+/g)
+    .filter(nonempty);
+  let i = -1;
+  for (let l = 0, n = parts.length; ++i < n; ) {
+    if ((l += parts[i].length) + i > length) {
+      parts[i] = parts[i].substring(0, length - l + parts[i].length - i);
+      break;
+    }
+  }
+  return (
+    parts
+      .slice(0, i + 1)
+      .filter(Boolean)
+      .join(separator) || fallback.slice(0, length)
+  );
+}
+
+function nonempty(string: string) {
+  return string.length > 0;
+}

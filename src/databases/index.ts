@@ -1,4 +1,11 @@
+import {createReadStream} from "node:fs";
+import {dirname, join} from "node:path";
+import {json} from "node:stream/consumers";
+import {isEnoent} from "../lib/error.js";
+import {hash as getQueryHash, nameHash as getNameHash} from "../lib/hash.js";
 import type {ColumnSchema, QueryParam} from "../runtime/index.js";
+
+export {hash as getQueryHash, nameHash as getNameHash} from "../lib/hash.js";
 
 export type DatabaseConfig = DuckDBConfig | SnowflakeConfig | PostgresConfig;
 
@@ -34,7 +41,7 @@ export type DatabaseContext = {
 };
 
 export type QueryTemplateFunction = (
-  strings: string[],
+  strings: readonly string[],
   ...params: QueryParam[]
 ) => Promise<SerializableQueryResult>;
 
@@ -44,6 +51,25 @@ export type SerializableQueryResult = {
   duration: number;
   date: Date;
 };
+
+export async function getDatabaseConfig(
+  sourcePath: string,
+  databaseName: string
+): Promise<DatabaseConfig> {
+  const sourceDir = dirname(sourcePath);
+  const configPath = join(sourceDir, ".observable", "databases.json");
+  let config: DatabaseConfig | undefined;
+  try {
+    const configStream = createReadStream(configPath, "utf-8");
+    const configs = (await json(configStream)) as Record<string, DatabaseConfig>;
+    config = configs[databaseName];
+  } catch (error) {
+    if (!isEnoent(error)) throw error;
+  }
+  if (isDefaultDatabase(databaseName)) config ??= {type: databaseName};
+  if (!config) throw new Error(`database not found: ${databaseName}`);
+  return config;
+}
 
 export async function getDatabase(
   config: DatabaseConfig,
@@ -63,4 +89,15 @@ export async function getDatabase(
 
 export function isDefaultDatabase(name: string): name is "postgres" | "duckdb" {
   return name === "postgres" || name === "duckdb";
+}
+
+export async function getQueryCachePath(
+  sourcePath: string,
+  databaseName: string,
+  strings: readonly string[],
+  ...params: unknown[]
+): Promise<string> {
+  const sourceDir = dirname(sourcePath);
+  const cacheName = `${await getNameHash(databaseName)}-${await getQueryHash(strings, ...params)}.json`;
+  return join(sourceDir, ".observable", "cache", cacheName);
 }

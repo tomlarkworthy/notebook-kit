@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import type {SerializableQueryResult} from "../../databases/index.js";
+import {hash, nameHash} from "../../lib/hash.js";
 
 /** A serializable value that can be interpolated into a query. */
 export type QueryParam = any;
@@ -41,11 +42,10 @@ export interface QueryOptions extends QueryOptionsSpec {
 export interface DatabaseClient {
   readonly name: string;
   readonly options: QueryOptions;
-  sql(strings: string[], ...params: QueryParam[]): Promise<QueryResult>;
+  sql(strings: readonly string[], ...params: QueryParam[]): Promise<QueryResult>;
 }
 
 export const DatabaseClient = (name: string, options?: QueryOptionsSpec): DatabaseClient => {
-  if (!/^[\w-]+$/.test(name)) throw new Error(`invalid database: ${name}`);
   return new DatabaseClientImpl(name, normalizeOptions(options));
 };
 
@@ -65,20 +65,12 @@ class DatabaseClientImpl implements DatabaseClient {
       options: {value: options, enumerable: true}
     });
   }
-  async sql(strings: string[], ...params: QueryParam[]): Promise<QueryResult> {
-    const path = `.observable/cache/${this.name}-${await hash(strings, ...params)}.json`;
+  async sql(strings: readonly string[], ...params: QueryParam[]): Promise<QueryResult> {
+    const path = `.observable/cache/${await nameHash(this.name)}-${await hash(strings, ...params)}.json`;
     const response = await fetch(path);
     if (!response.ok) throw new Error(`failed to fetch: ${path}`);
     return await response.json().then(revive);
   }
-}
-
-async function hash(strings: string[], ...params: unknown[]): Promise<string> {
-  const encoded = new TextEncoder().encode(JSON.stringify([strings, ...params]));
-  const buffer = await crypto.subtle.digest("SHA-256", encoded);
-  const int = new Uint8Array(buffer).reduce((i, byte) => (i << 8n) | BigInt(byte), 0n);
-  const length = 16;
-  return int.toString(36).padStart(length, "0").slice(0, length);
 }
 
 function revive({rows, schema, date, ...meta}: SerializableQueryResult): QueryResult {

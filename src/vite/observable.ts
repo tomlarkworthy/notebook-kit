@@ -1,21 +1,18 @@
-import {createReadStream, existsSync} from "node:fs";
+import {existsSync} from "node:fs";
 import {mkdir, readFile, writeFile} from "node:fs/promises";
-import {json} from "node:stream/consumers";
 import {dirname, join, resolve} from "node:path";
+import {relative} from "node:path/posix";
 import {fileURLToPath} from "node:url";
 import type {TemplateLiteral} from "acorn";
 import {JSDOM} from "jsdom";
 import type {PluginOption, IndexHtmlTransformContext} from "vite";
-import type {DatabaseConfig} from "../databases/index.js";
-import {getDatabase, isDefaultDatabase} from "../databases/index.js";
-import {isEnoent} from "../lib/error.js";
+import {getDatabase, getDatabaseConfig, getQueryCachePath} from "../databases/index.js";
 import type {Cell, Notebook} from "../lib/notebook.js";
 import {deserialize} from "../lib/serialize.js";
 import {Sourcemap} from "../javascript/sourcemap.js";
 import {transpile} from "../javascript/transpile.js";
 import {parseTemplate} from "../javascript/template.js";
 import {collectAssets} from "../runtime/stdlib/assets.js";
-import {DatabaseClient} from "../runtime/stdlib/databaseClient.js";
 import {highlight} from "../runtime/stdlib/highlight.js";
 import {MarkdownRenderer} from "../runtime/stdlib/md.js";
 
@@ -116,33 +113,20 @@ export function observable({
             const template = parseTemplate(value);
             if (!template.expressions.length) {
               const dir = dirname(context.filename);
-              const cacheDir = join(dir, ".observable", "cache");
-              const hash = await DatabaseClient.hash.call(null, [value]);
-              const cacheName = `${cell.database}-${hash}.json`;
-              const cachePath = join(cacheDir, cacheName);
+              const cachePath = await getQueryCachePath(context.filename, cell.database, [value]);
               if (!existsSync(cachePath)) {
-                let config: DatabaseConfig | undefined;
-                try {
-                  const configPath = join(dir, ".observable", "databases.json");
-                  const configStream = createReadStream(configPath, "utf-8");
-                  const configs = (await json(configStream)) as Record<string, DatabaseConfig>;
-                  config = configs[cell.database];
-                } catch (error) {
-                  if (!isEnoent(error)) throw error;
-                }
-                if (isDefaultDatabase(cell.database)) config ??= {type: cell.database};
-                if (!config) throw new Error(`database not found: ${cell.database}`);
+                const config = await getDatabaseConfig(context.filename, cell.database);
                 try {
                   const database = await getDatabase(config, {cwd: dir});
                   const results = await database.call(null, [value]);
-                  await mkdir(cacheDir, {recursive: true});
+                  await mkdir(dirname(cachePath), {recursive: true});
                   await writeFile(cachePath, JSON.stringify(results));
                 } catch (error) {
                   console.error(error);
                 }
               }
               cell.mode = "js";
-              cell.value = `FileAttachment(${JSON.stringify(`.observable/cache/${cacheName}`)}).json().then(DatabaseClient.revive)${hidden ? "" : `.then(Inputs.table)${cell.output ? ".then(view)" : ""}`}`;
+              cell.value = `FileAttachment(${JSON.stringify(relative(dir, cachePath))}).json().then(DatabaseClient.revive)${hidden ? "" : `.then(Inputs.table)${cell.output ? ".then(view)" : ""}`}`;
             }
           }
           collectAssets(assets, div);
