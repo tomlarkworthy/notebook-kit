@@ -31,11 +31,11 @@
     **If query results are saved, how do I update them?** In Observable Desktop, you can re-run a SQL cell by clicking the **Play** button, by hitting <span style="font-family: var(--sans-serif);">**shift-return**</span>, or by clicking on the query age in the cell toolbar. In Observable Notebook Kit, delete the corresponding file from the `.observable/cache` directory; you can also use continuous deployment, such as GitHub Actions, to refresh data automatically.
   </script>
   <script id="28" type="text/markdown">
-    **How do I configure my database?** When using DuckDB or PostgreSQL with default settings, no configuration is required; simply specify `duckdb` or `postgres` as the **database** in the SQL cell. Note: you must save your notebook before running queries, since where you save the notebook determines which databases are accessible and where query results are saved. To configure databases, edit the <code>.observable/<wbr>databases.json</code> file alongside your notebook. For example, if your notebooks are stored in `docs`,
+    **How do I configure my database?** When using DuckDB or (localhost) Postgres with the default settings, no configuration is required; simply specify `duckdb`, `postgres`, or a `.duckdb` (or `.db`) file as the **database** in the SQL cell. Note: you must save your notebook before running queries, since where you save the notebook determines which databases are accessible and where query results are saved. To configure databases, edit the <code>.observable/<wbr>databases.json</code> file alongside your notebook; see below for details. For example, if your notebooks are stored in `docs`,
     then a notebook `docs/example.html` can access any database configured in <code>docs/<wbr>.observable/<wbr>databases.json</code>. In the future, Observable Desktop will provide a built-in UI for configuring databases.
   </script>
   <script id="15" type="text/markdown">
-    **Which databases are supported?** Currently DuckDB, Snowflake, and Postgres (PostgreSQL). Postgres also means any PostgreSQL-compatible database, such as ClickHouse, Amazon Redshift, and Google Cloud SQL. We plan on adding more data connectors soon, notably Google BigQuery and Databricks. Our data connectors are [open-source](https://github.com/observablehq/notebook-kit/tree/main/src/databases) and we welcome contributions of additional database drivers! While you can query OLTP databases, we recommend OLAP databases because fast _ad hoc_ queries greatly accelerate analysis.
+    **Which databases are supported?** Currently DuckDB, Snowflake, and Postgres (PostgreSQL). The Postgres driver should also work with Postgres-compatible databases such as ClickHouse, Amazon Redshift, and Google Cloud SQL. We plan on adding more data connectors soon, notably Google BigQuery and Databricks. Our data connectors are [open-source](https://github.com/observablehq/notebook-kit/tree/main/src/databases) and we welcome contributions of additional database drivers! While you can query OLTP databases, we recommend OLAP databases because fast _ad hoc_ queries greatly accelerate analysis.
   </script>
   <script id="35" type="text/markdown">
     **How do I query my database?** Insert a new cell, say by clicking the <b>+</b> button between cells. Convert the new cell to SQL by hitting down or <span style="font-family: var(--sans-serif);">⌘4</span>. By default, SQL cells query the default `duckdb` in-memory database. To query a different database, edit the **database** in the cell toolbar, then click ↩︎ or hit <span style="font-family: var(--sans-serif);">return</span>. Then refocus the SQL cell, edit your query, and hit <span style="font-family: var(--sans-serif);">shift-return</span> to run it.
@@ -81,7 +81,7 @@
     ORDER BY 1 DESC
   </script>
   <script id="60" type="text/markdown">
-    We can feed the resulting data to Observable Plot for a simple area chart:
+    As an area chart with Observable Plot:
   </script>
   <script id="5" type="module" pinned="">
     Plot.plot({
@@ -96,7 +96,7 @@
     })
   </script>
   <script id="58" type="text/markdown">
-    How about grouping the data by hour of day and day of week?
+    The daily and weekly periodicity is quite prominent. How about grouping the data by hour of day and day of week?
   </script>
   <script id="55" type="application/sql" pinned="" database="duckdb" output="trips_heatmap">
     SELECT
@@ -108,7 +108,7 @@
     ORDER BY 1, 2
   </script>
   <script id="61" type="text/markdown">
-    And displaying it as a heatmap, showing the :
+    As a heatmap, showing busy morning commutes and saturday nights:
   </script>
   <script id="56" type="module" pinned="">
     Plot.plot({
@@ -120,7 +120,7 @@
     })
   </script>
   <script id="16" type="text/markdown">
-    **My data is sensitive; where does it go when I run a query?** Database connectors run locally on your computer, so your data stays private. You can access databases on your local machine or private networks without going through Observable servers. If you are using DuckDB, you can read local files in the same directory as your notebook.
+    **My data is sensitive; where does it go when I run a query?** Database connectors run locally on your computer, so your data stays private. You access data on your local machine or private networks without going through Observable servers.
   </script>
   <script id="43" type="text/markdown">
     **My database credentials are sensitive! How do I keep them secure?** Because the `databases.json` file typically contains credentials, it should not be committed to source control. We recommend excluding the entire `.observable` directory by adding it to your `.gitignore`, like so:
@@ -135,14 +135,14 @@
     **Some of my notebooks need to talk to different databases, and some of my notebooks are untrusted; what do I do?** Use folders to separate notebooks with different levels of trust, and to configure different databases. A notebook can only access files and databases that live in the same folder (or subfolder) as the notebook. If you configure a sensitive database or have sensitive files, only put trusted notebooks in that folder. Don't mix trusted and untrusted notebooks in the same folder.
   </script>
   <script id="22" type="text/markdown">
-    **Does sharing my notebook require giving readers access to my database?** No. Notebook Kit builds a static site from your notebooks which includes the saved query results. Query results can therefore be shared without giving readers access to your database. However, this also means that shared notebooks cannot use dynamic queries (which by definition are not static, and thus cannot be "baked" at build time). If desired, use JavaScript or DuckDB-Wasm (`DuckDBClient`) to filter and transform data interactively on the client.
+    **Does sharing my notebook require giving readers access to my database?** No. Notebook Kit builds a static site from your notebooks which includes the saved query results. Query results can therefore be shared without giving readers access to your database. However, this also means that shared notebooks cannot use dynamic queries (which by nature cannot be "baked" at build time). If desired, use JavaScript or DuckDB-Wasm (`DuckDBClient`) to filter and transform data interactively on the client.
   </script>
   <script id="63" type="text/markdown">
-    **How do I run dynamic queries?** Use `$\{…}` to interpolate JavaScript values into SQL cells. Or, use the `DatabaseClient` JavaScript API to issue queries, like so:
+    **How do I run dynamic queries?** Use `$\{…}` to interpolate JavaScript values into SQL cells. You can also use the `DatabaseClient` JavaScript API like so:
 
     ```js
     const db = DatabaseClient("duckdb");
-    const three = await db.sql`SELECT 1 + 2`;
+    const three = await db.sql`SELECT 1 + $\{2}`;
     ```
 
     Since dynamic queries are not baked, they are only suitable for use within Observable Desktop, while previewing with Notebook Kit, or when using a client-side database such as `DuckDBClient` (DuckDB-Wasm).
