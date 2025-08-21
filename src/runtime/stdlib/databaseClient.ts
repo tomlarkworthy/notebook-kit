@@ -66,10 +66,13 @@ class DatabaseClientImpl implements DatabaseClient {
     });
   }
   async sql(strings: readonly string[], ...params: QueryParam[]): Promise<QueryResult> {
-    const path = `.observable/cache/${await nameHash(this.name)}-${await hash(strings, ...params)}.json`;
+    const path = await this.cachePath(strings, ...params);
     const response = await fetch(path);
     if (!response.ok) throw new Error(`failed to fetch: ${path}`);
     return await response.json().then(revive);
+  }
+  async cachePath(strings: readonly string[], ...params: QueryParam[]): Promise<string> {
+    return `.observable/cache/${await nameHash(this.name)}-${await hash(strings, ...params)}.json`;
   }
 }
 
@@ -104,7 +107,6 @@ function asDate(value: string): Date {
   return new Date(/^\d{4}-\d{2}-\d{2} \d{2}:\d{2}(?::\d{2})?$/.test(value) ? value + "Z" : value);
 }
 
-DatabaseClient.hash = hash;
 DatabaseClient.revive = revive;
 DatabaseClient.prototype = DatabaseClientImpl.prototype; // instanceof
 Object.defineProperty(DatabaseClientImpl, "name", {value: "DatabaseClient"}); // prevent mangling
