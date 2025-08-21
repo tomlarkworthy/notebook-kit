@@ -66,8 +66,12 @@ export async function getDatabaseConfig(
   } catch (error) {
     if (!isEnoent(error)) throw error;
   }
-  if (isDefaultDatabase(databaseName)) config ??= {type: databaseName};
-  if (!config) throw new Error(`database not found: ${databaseName}`);
+  if (config === undefined) {
+    if (databaseName === "postgres") config = {type: "postgres"};
+    else if (databaseName === "duckdb") config = {type: "duckdb"};
+    else if (/\.(duck)?db$/i.test(databaseName)) config = {type: "duckdb", path: databaseName};
+    else throw new Error(`database not found: ${databaseName}`);
+  }
   return config;
 }
 
@@ -85,10 +89,6 @@ export async function getDatabase(
     default:
       throw new Error(`unsupported database type: ${config["type"]}`);
   }
-}
-
-export function isDefaultDatabase(name: string): name is "postgres" | "duckdb" {
-  return name === "postgres" || name === "duckdb";
 }
 
 export async function getQueryCachePath(
