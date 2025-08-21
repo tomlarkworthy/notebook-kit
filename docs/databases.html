@@ -138,14 +138,13 @@
     **Does sharing my notebook require giving readers access to my database?** No. Notebook Kit builds a static site from your notebooks which includes the saved query results. Query results can therefore be shared without giving readers access to your database. However, this also means that shared notebooks cannot use dynamic queries (which by definition are not static, and thus cannot be "baked" at build time). If desired, use JavaScript or DuckDB-Wasm (`DuckDBClient`) to filter and transform data interactively on the client.
   </script>
   <script id="63" type="text/markdown">
-    **How do I run dynamic queries?** Use `$\{…}` to interpolate JavaScript values into SQL cells. Or, use the `DatabaseClient` JavaScript API to issue queries.
-  </script>
-  <script id="65" type="module" pinned="">
-    const db = DatabaseClient("duckdb");
+    **How do I run dynamic queries?** Use `$\{…}` to interpolate JavaScript values into SQL cells. Or, use the `DatabaseClient` JavaScript API to issue queries, like so:
 
-    display(await db.sql`SELECT 1 + 2`);
-  </script>
-  <script id="29" type="text/markdown">
+    ```js
+    const db = DatabaseClient("duckdb");
+    const three = await db.sql`SELECT 1 + 2`;
+    ```
+
     Since dynamic queries are not baked, they are only suitable for use within Observable Desktop, while previewing with Notebook Kit, or when using a client-side database such as `DuckDBClient` (DuckDB-Wasm).
   </script>
   <script id="42" type="text/markdown">
