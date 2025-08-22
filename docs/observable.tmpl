@@ -71,21 +71,24 @@
       document.querySelector("#edit-page").href += `/edit/main/docs${location.pathname.replace(/^\/notebook-kit\//, "/") + (location.pathname.endsWith("/") ? "index" : "")}.html`;
     </script>
     <script type="module">
-      let scrolled1 = false;
+      let scrolled = false;
       const header = document.querySelector("#header");
       document.addEventListener("scroll", () => {
         const s = scrollY > 0;
-        if (scrolled1 === s) return;
-        header.classList.toggle("scrolled1", scrolled1 = s);
+        if (scrolled === s) return;
+        header.classList.toggle("scrolled1", scrolled = s);
       });
     </script>
     <script type="module">
-      let scrolled2 = false;
+      let side;
+      let scrolled = false;
       document.addEventListener("scroll", () => {
         const c = document.querySelector(".observablehq--cell");
-        const s = c?.getBoundingClientRect().bottom < 50;
-        if (scrolled2 === s) return;
-        header.classList.toggle("scrolled2", scrolled2 = s);
+        if (!c) return;
+        if (side === undefined) side = getComputedStyle(c).paddingBottom === "0px" ? "top" : "bottom";
+        const s = c.getBoundingClientRect()[side] < 0;
+        if (scrolled === s) return;
+        header.classList.toggle("scrolled2", scrolled = s);
       });
     </script>
     <footer style="width: 100vw; margin: 2rem calc((100% - 100vw) / 2) -32px; padding-bottom: 16px; background-color: var(--theme-foreground); color: var(--theme-background); font: 12px/normal var(--sans-serif);">
