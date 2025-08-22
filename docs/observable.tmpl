@@ -25,9 +25,17 @@
       @import url("@fontsource/inter/600-italic.css");
       @import url("@fontsource/inter/700-italic.css");
     </style>
+    <style type="text/css">
+      #header {
+        transition: box-shadow ease 250ms;
+      }
+      #header.scrolled {
+        box-shadow: 0 0 6px rgba(0, 0, 0, 0.2);
+      }
+    </style>
   </head>
   <body>
-    <header style="width: 100vw; margin: -32px calc((100% - 100vw) / 2) 4rem; background-color: var(--theme-foreground); color: var(--theme-background); font: 500 16px/normal var(--sans-serif);">
+    <header id="header" style="position: sticky; z-index: 10; top: 0; margin: -32px calc((100% - 100vw) / 2) 4rem; background: var(--theme-foreground); color: var(--theme-background); font: 500 16px/normal var(--sans-serif);">
       <div style="display: flex; max-width: var(--max-width); padding: 1rem; margin: auto; gap: 1rem; justify-content: space-between;">
         <a href="/notebook-kit/" style="color: inherit; display: flex; align-items: center; gap: 0.5rem;">
           <svg role="img" width="24" height="24" viewBox="0 0 24 24" aria-label="Observable" fill="currentColor">
@@ -53,6 +61,15 @@
     </div>
     <script type="module">
       document.querySelector("#edit-page").href += `/edit/main/docs${location.pathname.replace(/^\/notebook-kit\//, "/") + (location.pathname.endsWith("/") ? "index" : "")}.html`;
+    </script>
+    <script type="module">
+      let scrolled = false;
+      const header = document.querySelector("#header");
+      document.addEventListener("scroll", () => {
+        const s = scrollY > 0;
+        if (scrolled === s) return;
+        header.classList.toggle("scrolled", scrolled = s);
+      });
     </script>
     <footer style="width: 100vw; margin: 2rem calc((100% - 100vw) / 2) -32px; padding-bottom: 16px; background-color: var(--theme-foreground); color: var(--theme-background); font: 12px/normal var(--sans-serif);">
       <div style="display: flex; flex-wrap: wrap; max-width: var(--max-width); padding: 2rem 1rem; margin: auto; gap: 2rem;">
