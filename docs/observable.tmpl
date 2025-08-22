@@ -27,15 +27,23 @@
     </style>
     <style type="text/css">
       #header {
-        transition: box-shadow ease 250ms;
+        background: var(--theme-foreground);
+        color: var(--theme-background);
+        transition: box-shadow ease 250ms,
+          background-color linear 250ms,
+          color linear 250ms;
       }
-      #header.scrolled {
+      #header.scrolled1 {
         box-shadow: 0 0 6px rgba(0, 0, 0, 0.2);
+      }
+      #header.scrolled2 {
+        background: var(--theme-background);
+        color: var(--theme-foreground);
       }
     </style>
   </head>
   <body>
-    <header id="header" style="position: sticky; z-index: 10; top: 0; margin: -32px calc((100% - 100vw) / 2) 4rem; background: var(--theme-foreground); color: var(--theme-background); font: 500 16px/normal var(--sans-serif);">
+    <header id="header" style="position: sticky; z-index: 10; top: 0; margin: -32px calc((100% - 100vw) / 2) 4rem; font: 500 16px/normal var(--sans-serif);">
       <div style="display: flex; max-width: var(--max-width); padding: 1rem; margin: auto; gap: 1rem; justify-content: space-between;">
         <a href="/notebook-kit/" style="color: inherit; display: flex; align-items: center; gap: 0.5rem;">
           <svg role="img" width="24" height="24" viewBox="0 0 24 24" aria-label="Observable" fill="currentColor">
@@ -63,12 +71,21 @@
       document.querySelector("#edit-page").href += `/edit/main/docs${location.pathname.replace(/^\/notebook-kit\//, "/") + (location.pathname.endsWith("/") ? "index" : "")}.html`;
     </script>
     <script type="module">
-      let scrolled = false;
+      let scrolled1 = false;
       const header = document.querySelector("#header");
       document.addEventListener("scroll", () => {
         const s = scrollY > 0;
-        if (scrolled === s) return;
-        header.classList.toggle("scrolled", scrolled = s);
+        if (scrolled1 === s) return;
+        header.classList.toggle("scrolled1", scrolled1 = s);
+      });
+    </script>
+    <script type="module">
+      let scrolled2 = false;
+      document.addEventListener("scroll", () => {
+        const c = document.querySelector(".observablehq--cell");
+        const s = c?.getBoundingClientRect().bottom < 50;
+        if (scrolled2 === s) return;
+        header.classList.toggle("scrolled2", scrolled2 = s);
       });
     </script>
     <footer style="width: 100vw; margin: 2rem calc((100% - 100vw) / 2) -32px; padding-bottom: 16px; background-color: var(--theme-foreground); color: var(--theme-background); font: 12px/normal var(--sans-serif);">
