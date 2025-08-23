@@ -7,17 +7,12 @@ import type {ColumnSchema, QueryParam} from "../runtime/index.js";
 
 export {hash as getQueryHash, nameHash as getNameHash} from "../lib/hash.js";
 
-export type DatabaseConfig = DuckDBConfig | SQLiteConfig | SnowflakeConfig | PostgresConfig;
+export type DatabaseConfig = DuckDBConfig | SnowflakeConfig | PostgresConfig;
 
 export type DuckDBConfig = {
   type: "duckdb";
   path?: string;
   options?: {[key: string]: string}; // https://duckdb.org/docs/stable/configuration/overview.html
-};
-
-export type SQLiteConfig = {
-  type: "sqlite";
-  path?: string;
 };
 
 export type SnowflakeConfig = {
@@ -74,9 +69,7 @@ export async function getDatabaseConfig(
   if (config === undefined) {
     if (databaseName === "postgres") config = {type: "postgres"};
     else if (databaseName === "duckdb") config = {type: "duckdb"};
-    else if (databaseName === "sqlite") config = {type: "sqlite"};
-    else if (/\.duckdb$/i.test(databaseName)) config = {type: "duckdb", path: databaseName};
-    else if (/\.db$/i.test(databaseName)) config = {type: "sqlite", path: databaseName}; // TODO disambiguate
+    else if (/\.(duck)?db$/i.test(databaseName)) config = {type: "duckdb", path: databaseName};
     else throw new Error(`database not found: ${databaseName}`);
   }
   return config;
@@ -89,8 +82,6 @@ export async function getDatabase(
   switch (config.type) {
     case "duckdb":
       return (await import("./duckdb.js")).default(config, context);
-    case "sqlite":
-    return (await import("./sqlite.js")).default(config, context);
     case "snowflake":
       return (await import("./snowflake.js")).default(config);
     case "postgres":
