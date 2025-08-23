@@ -90,7 +90,7 @@ export async function getDatabase(
     case "duckdb":
       return (await import("./duckdb.js")).default(config, context);
     case "sqlite":
-      return (await (typeof Bun !== "undefined" ? import("./sqlite-bun.js") : import("./sqlite-node.js"))).default(config, context);
+      return (await import(process.versions.bun ? "./sqlite-bun.js" : "./sqlite-node.js")).default(config, context);
     case "snowflake":
       return (await import("./snowflake.js")).default(config);
     case "postgres":
