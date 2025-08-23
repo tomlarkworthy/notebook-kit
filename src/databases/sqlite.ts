@@ -1,6 +1,6 @@
 import {join} from "node:path";
-import type {Statement} from "better-sqlite3";
-import Database from "better-sqlite3";
+import type {StatementSync} from "node:sqlite";
+import {DatabaseSync} from "node:sqlite";
 import type {DatabaseContext, SQLiteConfig, QueryTemplateFunction} from "./index.js";
 import type {ColumnSchema} from "../runtime/index.js";
 
@@ -11,7 +11,7 @@ export default function sqlite(
   if (path !== undefined) path = join(context.cwd, path);
   return async (strings, ...params) => {
     const date = new Date();
-    const database = new Database(path);
+    const database = new DatabaseSync(path);
     try {
       const statement = database.prepare(strings.join("?"));
       const rows = statement.all(...params) as Record<string, unknown>[];
@@ -27,7 +27,7 @@ export default function sqlite(
   };
 }
 
-function getStatementSchema(statement: Statement): ColumnSchema[] {
+function getStatementSchema(statement: StatementSync): ColumnSchema[] {
   return statement
     .columns()
     .map((column) => ({name: column.name, type: getColumnType(column.type)}));
