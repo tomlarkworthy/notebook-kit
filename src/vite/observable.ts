@@ -117,7 +117,7 @@ export function observable({
               const cachePath = await getQueryCachePath(context.filename, cell.database, [value]);
               if (!existsSync(cachePath)) {
                 const args = ["--root", dir, "--database", cell.database, value];
-                const child = fork(fileURLToPath(import.meta.resolve("../../bin/query.ts")), args);
+                const child = fork(fileURLToPath(import.meta.resolve("../../bin/query.js")), args);
                 await new Promise((resolve, reject) => {
                   child.on("error", reject);
                   child.on("exit", resolve);
