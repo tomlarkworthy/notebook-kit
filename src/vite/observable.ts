@@ -1,12 +1,13 @@
+import {fork} from "node:child_process";
 import {existsSync} from "node:fs";
-import {mkdir, readFile, writeFile} from "node:fs/promises";
+import {readFile} from "node:fs/promises";
 import {dirname, join, resolve} from "node:path";
 import {relative} from "node:path/posix";
 import {fileURLToPath} from "node:url";
 import type {TemplateLiteral} from "acorn";
 import {JSDOM} from "jsdom";
 import type {PluginOption, IndexHtmlTransformContext} from "vite";
-import {getDatabase, getDatabaseConfig, getQueryCachePath} from "../databases/index.js";
+import {getQueryCachePath} from "../databases/index.js";
 import type {Cell, Notebook} from "../lib/notebook.js";
 import {deserialize} from "../lib/serialize.js";
 import {Sourcemap} from "../javascript/sourcemap.js";
@@ -115,15 +116,12 @@ export function observable({
               const dir = dirname(context.filename);
               const cachePath = await getQueryCachePath(context.filename, cell.database, [value]);
               if (!existsSync(cachePath)) {
-                const config = await getDatabaseConfig(context.filename, cell.database);
-                try {
-                  const database = await getDatabase(config, {cwd: dir});
-                  const results = await database.call(null, [value]);
-                  await mkdir(dirname(cachePath), {recursive: true});
-                  await writeFile(cachePath, JSON.stringify(results));
-                } catch (error) {
-                  console.error(error);
-                }
+                const args = ["--root", dir, "--database", cell.database, value];
+                const child = fork(fileURLToPath(import.meta.resolve("../../bin/query.ts")), args);
+                await new Promise((resolve, reject) => {
+                  child.on("error", reject);
+                  child.on("exit", resolve);
+                });
               }
               cell.mode = "js";
               cell.value = `FileAttachment(${JSON.stringify(relative(dir, cachePath))}).json().then(DatabaseClient.revive)${hidden ? "" : `.then(Inputs.table)${cell.output ? ".then(view)" : ""}`}`;

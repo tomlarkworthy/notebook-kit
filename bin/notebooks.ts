@@ -18,6 +18,11 @@ switch (command) {
     await run(process.argv.slice(3));
     break;
   }
+  case "query": {
+    const {default: run} = await import("./query.js");
+    await run(process.argv.slice(3));
+    break;
+  }
   default: {
     console.log(
       `usage: notebooks <command>
@@ -25,6 +30,7 @@ switch (command) {
   preview      start the preview server
   build        generate a static site
   download     download an Observable Notebook as HTML
+  query        run a database query
   help         print usage information
   version      print the version
 `

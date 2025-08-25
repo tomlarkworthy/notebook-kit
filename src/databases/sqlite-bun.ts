@@ -1,17 +1,13 @@
-import {join} from "node:path";
 import type {Statement} from "bun:sqlite";
 import {Database} from "bun:sqlite";
-import type {DatabaseContext, SQLiteConfig, QueryTemplateFunction} from "./index.js";
+import type {SQLiteConfig, QueryTemplateFunction} from "./index.js";
 import type {ColumnSchema} from "../runtime/index.js";
 import {getColumnType} from "./sqlite.js";
 
-export default function sqlite(
-  {path}: SQLiteConfig,
-  context: DatabaseContext
-): QueryTemplateFunction {
+export default function sqlite({path = ":memory:"}: SQLiteConfig): QueryTemplateFunction {
   return async (strings, ...params) => {
     const date = new Date();
-    const database = new Database(path === undefined ? ":memory:" : join(context.cwd, path));
+    const database = new Database(path);
     try {
       const statement = database.prepare(strings.join("?"));
       const rows = statement.all(...params) as Record<string, unknown>[];

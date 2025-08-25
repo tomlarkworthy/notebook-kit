@@ -41,10 +41,6 @@ export type PostgresConfig = {
   ssl?: boolean;
 };
 
-export type DatabaseContext = {
-  cwd: string;
-};
-
 export type QueryTemplateFunction = (
   strings: readonly string[],
   ...params: QueryParam[]
@@ -82,15 +78,12 @@ export async function getDatabaseConfig(
   return config;
 }
 
-export async function getDatabase(
-  config: DatabaseConfig,
-  context: DatabaseContext
-): Promise<QueryTemplateFunction> {
+export async function getDatabase(config: DatabaseConfig): Promise<QueryTemplateFunction> {
   switch (config.type) {
     case "duckdb":
-      return (await import("./duckdb.js")).default(config, context);
+      return (await import("./duckdb.js")).default(config);
     case "sqlite":
-      return (await import(process.versions.bun ? "./sqlite-bun.js" : "./sqlite-node.js")).default(config, context);
+      return (await import(process.versions.bun ? "./sqlite-bun.js" : "./sqlite-node.js")).default(config);
     case "snowflake":
       return (await import("./snowflake.js")).default(config);
     case "postgres":
