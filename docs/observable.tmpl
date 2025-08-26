@@ -33,10 +33,10 @@
           background-color linear 250ms,
           color linear 250ms;
       }
-      #header.scrolled1 {
+      :root.scrolled1 #header {
         box-shadow: 0 0 6px rgba(0, 0, 0, 0.2);
       }
-      #header.scrolled2 {
+      :root.scrolled2 #header {
         background: var(--theme-background);
         color: var(--theme-foreground);
       }
@@ -72,24 +72,27 @@
     </script>
     <script type="module">
       let scrolled = false;
-      const header = document.querySelector("#header");
-      document.addEventListener("scroll", () => {
+      function onscroll() {
         const s = scrollY > 0;
         if (scrolled === s) return;
-        header.classList.toggle("scrolled1", scrolled = s);
-      });
+        document.documentElement.classList.toggle("scrolled1", scrolled = s);
+      }
+      onscroll();
+      document.addEventListener("scroll", onscroll);
     </script>
     <script type="module">
       let side;
       let scrolled = false;
-      document.addEventListener("scroll", () => {
-        const c = document.querySelector(".observablehq--cell");
-        if (!c) return;
-        if (side === undefined) side = getComputedStyle(c).paddingBottom === "0px" ? "top" : "bottom";
-        const s = c.getBoundingClientRect()[side] < 0;
+      function onscroll() {
+        const cell = document.querySelector(".observablehq--cell");
+        if (!cell) return;
+        if (!side) side = getComputedStyle(cell).paddingBottom === "0px" ? "top" : "bottom";
+        const s = cell.getBoundingClientRect()[side] < 0;
         if (scrolled === s) return;
-        header.classList.toggle("scrolled2", scrolled = s);
-      });
+        document.documentElement.classList.toggle("scrolled2", scrolled = s);
+      }
+      onscroll();
+      document.addEventListener("scroll", onscroll);
     </script>
     <footer style="width: 100vw; margin: 2rem calc((100% - 100vw) / 2) -32px; padding-bottom: 16px; background-color: var(--theme-foreground); color: var(--theme-background); font: 12px/normal var(--sans-serif);">
       <div style="display: flex; flex-wrap: wrap; max-width: var(--max-width); padding: 2rem 1rem; margin: auto; gap: 2rem;">
