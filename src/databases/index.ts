@@ -5,8 +5,6 @@ import {isEnoent} from "../lib/error.js";
 import {hash as getQueryHash, nameHash as getNameHash} from "../lib/hash.js";
 import type {ColumnSchema, QueryParam} from "../runtime/index.js";
 
-export {hash as getQueryHash, nameHash as getNameHash} from "../lib/hash.js";
-
 export type DatabaseConfig = DuckDBConfig | SQLiteConfig | SnowflakeConfig | PostgresConfig;
 
 export type DuckDBConfig = {

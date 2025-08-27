@@ -181,7 +181,7 @@
     ```json
     {
       "dependencies": {
-        "@observablehq/notebook-kit": "^1.0.1"
+        "@observablehq/notebook-kit": "^%VITE_VERSION%"
       },
       "scripts": {
         "docs:preview": "notebooks preview --root docs",
@@ -201,7 +201,7 @@
     This generates a `.observable/dist` folder containing the built site, which you can then deploy to your preferred static site hosting service, such as GitHub Pages, Vercel, or Netlify.
   </script>
   <script id="46" type="text/markdown">
-    When building notebooks, we use static generation for Markdown and HTML cells: static content is statically rendered. This improves the user experience by accelerating the first contentful paint, and by reducing reflow during page load --- your page appears instantly. It's good for SEO, too, because static content is now readable by search engines without JavaScript.
+    When building notebooks, we use static generation for Markdown and HTML cells: static content is statically rendered. We "bake" the results of static [database queries](./databases), too. Static generation improves the user experience by accelerating the first contentful paint, and by reducing reflow during page load --- your page appears instantly. It's good for SEO, too, because static content is now readable by search engines without JavaScript.
   </script>
   <script id="19" type="text/markdown">
     <aside>You can also use the new Vite plugin directly if you want to integrate notebooks into your existing Vite-based application.</aside>
