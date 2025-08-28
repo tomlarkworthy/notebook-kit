@@ -45,14 +45,19 @@ export default async function run(args?: string[]): Promise<void> {
     else strings.push(positionals[i]);
   }
 
-  process.chdir(values.root);
-  const cachePath = await getQueryCachePath(".", values.database, strings, ...params);
-  const config = await getDatabaseConfig(".", values.database);
-  const database = await getDatabase(config);
-  const results = await database.call(null, strings, ...params);
-  await mkdir(dirname(cachePath), {recursive: true});
-  await writeFile(cachePath, JSON.stringify(results, replace));
-  console.log(join(values.root, cachePath));
+  try {
+    process.chdir(values.root);
+    const cachePath = await getQueryCachePath(".", values.database, strings, ...params);
+    const config = await getDatabaseConfig(".", values.database);
+    const database = await getDatabase(config);
+    const results = await database.call(null, strings, ...params);
+    await mkdir(dirname(cachePath), {recursive: true});
+    await writeFile(cachePath, JSON.stringify(results, replace));
+    console.log(join(values.root, cachePath));
+  } catch (error) {
+    console.error(String(error));
+    process.exit(1);
+  }
 }
 
 // Force dates to be serialized as ISO 8601 UTC, undoing this:
