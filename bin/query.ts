@@ -55,7 +55,7 @@ export default async function run(args?: string[]): Promise<void> {
     await writeFile(cachePath, JSON.stringify(results, replace));
     console.log(join(values.root, cachePath));
   } catch (error) {
-    console.error(String(error));
+    console.error(getErrorMessage(error));
     process.exit(1);
   }
 }
@@ -64,4 +64,13 @@ export default async function run(args?: string[]): Promise<void> {
 // https://github.com/snowflakedb/snowflake-connector-nodejs/blob/a9174fb7/lib/connection/result/sf_timestamp.js#L177-L179
 function replace(this: {[key: string]: unknown}, key: string, value: unknown): unknown {
   return this[key] instanceof Date ? Date.prototype.toJSON.call(this[key]) : value;
+}
+
+function getErrorMessage(error: unknown): string {
+  return error instanceof Error &&
+    "errors" in error && // AggregateError
+    Array.isArray(error.errors) &&
+    error.errors.length > 0
+    ? String(error.errors[0])
+    : String(error);
 }
