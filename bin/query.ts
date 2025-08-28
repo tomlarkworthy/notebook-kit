@@ -1,10 +1,9 @@
 #!/usr/bin/env node
 
+import {mkdir, writeFile} from "node:fs/promises";
+import {dirname, join} from "node:path";
 import {parseArgs} from "node:util";
 import {getDatabase, getDatabaseConfig, getQueryCachePath} from "../src/databases/index.js";
-import {dirname} from "node:path/win32";
-import {mkdir, writeFile} from "node:fs/promises";
-import {join} from "node:path";
 
 if (process.argv[1] === import.meta.filename) run();
 
