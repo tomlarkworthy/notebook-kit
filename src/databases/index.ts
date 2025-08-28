@@ -5,7 +5,20 @@ import {isEnoent} from "../lib/error.js";
 import {hash as getQueryHash, nameHash as getNameHash} from "../lib/hash.js";
 import type {ColumnSchema, QueryParam} from "../runtime/index.js";
 
-export type DatabaseConfig = DuckDBConfig | SQLiteConfig | SnowflakeConfig | PostgresConfig;
+export type DatabaseConfig =
+  | BigQueryConfig
+  | DuckDBConfig
+  | SQLiteConfig
+  | SnowflakeConfig
+  | PostgresConfig;
+
+export type BigQueryConfig = {
+  type: "bigquery";
+  apiKey?: string;
+  keyFilename?: string;
+  keyFile?: string;
+  projectId?: string;
+};
 
 export type DuckDBConfig = {
   type: "duckdb";
@@ -78,6 +91,8 @@ export async function getDatabaseConfig(
 
 export async function getDatabase(config: DatabaseConfig): Promise<QueryTemplateFunction> {
   switch (config.type) {
+    case "bigquery":
+      return (await import("./bigquery.js")).default(config);
     case "duckdb":
       return (await import("./duckdb.js")).default(config);
     case "sqlite":
