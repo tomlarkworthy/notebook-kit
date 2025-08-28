@@ -47,10 +47,10 @@ export default async function run(args?: string[]): Promise<void> {
   }
 
   process.chdir(values.root);
+  const cachePath = await getQueryCachePath(".", values.database, strings, ...params);
   const config = await getDatabaseConfig(".", values.database);
   const database = await getDatabase(config);
   const results = await database.call(null, strings, ...params);
-  const cachePath = await getQueryCachePath(".", values.database, strings, ...params);
   await mkdir(dirname(cachePath), {recursive: true});
   await writeFile(cachePath, JSON.stringify(results, replace));
   console.log(join(values.root, cachePath));
