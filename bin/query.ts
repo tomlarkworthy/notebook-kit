@@ -4,6 +4,7 @@ import {mkdir, writeFile} from "node:fs/promises";
 import {dirname, join} from "node:path";
 import {parseArgs} from "node:util";
 import {getDatabase, getDatabaseConfig, getQueryCachePath} from "../src/databases/index.js";
+import {getReplacer} from "../src/databases/index.js";
 
 if (process.argv[1] === import.meta.filename) run();
 
@@ -52,18 +53,12 @@ export default async function run(args?: string[]): Promise<void> {
     const database = await getDatabase(config);
     const results = await database.call(null, strings, ...params);
     await mkdir(dirname(cachePath), {recursive: true});
-    await writeFile(cachePath, JSON.stringify(results, replace));
+    await writeFile(cachePath, JSON.stringify(results, await getReplacer(config)));
     console.log(join(values.root, cachePath));
   } catch (error) {
     console.error(getErrorMessage(error));
     process.exit(1);
   }
-}
-
-// Force dates to be serialized as ISO 8601 UTC, undoing this:
-// https://github.com/snowflakedb/snowflake-connector-nodejs/blob/a9174fb7/lib/connection/result/sf_timestamp.js#L177-L179
-function replace(this: {[key: string]: unknown}, key: string, value: unknown): unknown {
-  return this[key] instanceof Date ? Date.prototype.toJSON.call(this[key]) : value;
 }
 
 function getErrorMessage(error: unknown): string {

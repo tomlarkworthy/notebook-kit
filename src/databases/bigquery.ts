@@ -1,4 +1,5 @@
 import {BigQuery} from "@google-cloud/bigquery";
+import {BigQueryDate, BigQueryDatetime, BigQueryTimestamp} from "@google-cloud/bigquery";
 import type {TableField, TableSchema} from "@google-cloud/bigquery";
 import type {BigQueryConfig, QueryTemplateFunction} from "./index.js";
 import type {ColumnSchema} from "../runtime/index.js";
@@ -54,4 +55,13 @@ function getColumnType({type, mode}: TableField): ColumnSchema["type"] {
     default:
       return "string";
   }
+}
+
+export function replacer(this: {[key: string]: unknown}, key: string, value: unknown): unknown {
+  const v = this[key];
+  return v instanceof BigQueryDate ||
+    v instanceof BigQueryDatetime ||
+    v instanceof BigQueryTimestamp
+    ? new Date(v.value).toJSON()
+    : value;
 }

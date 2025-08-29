@@ -111,3 +111,10 @@ function getColumnType(column: Column): ColumnSchema["type"] {
       return "other";
   }
 }
+
+// Force dates to be serialized as ISO 8601 UTC, undoing this:
+// https://github.com/snowflakedb/snowflake-connector-nodejs/blob/a9174fb7/lib/connection/result/sf_timestamp.js#L177-L179
+export function replacer(this: {[key: string]: unknown}, key: string, value: unknown): unknown {
+  const v = this[key];
+  return v instanceof Date ? Date.prototype.toJSON.call(v) : value;
+}

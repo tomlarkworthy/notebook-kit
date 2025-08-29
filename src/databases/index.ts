@@ -106,6 +106,17 @@ export async function getDatabase(config: DatabaseConfig): Promise<QueryTemplate
   }
 }
 
+export type Replacer = (this: {[key: string]: unknown}, key: string, value: unknown) => unknown;
+
+export async function getReplacer(config: DatabaseConfig): Promise<Replacer | undefined> {
+  switch (config.type) {
+    case "bigquery":
+      return (await import("./bigquery.js")).replacer;
+    case "snowflake":
+      return (await import("./snowflake.js")).replacer;
+  }
+}
+
 export async function getQueryCachePath(
   sourcePath: string,
   databaseName: string,
