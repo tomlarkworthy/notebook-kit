@@ -7,6 +7,7 @@ import type {ColumnSchema, QueryParam} from "../runtime/index.js";
 
 export type DatabaseConfig =
   | BigQueryConfig
+  | DatabricksConfig
   | DuckDBConfig
   | SQLiteConfig
   | SnowflakeConfig
@@ -19,6 +20,15 @@ export type BigQueryConfig = {
   keyFile?: string;
   projectId?: string;
 };
+
+export type DatabricksConfig = {
+  type: "databricks";
+  host: string;
+  path: string;
+} & (
+  | {authType?: "access-token"; token: string}
+  | {authType: "databricks-oauth"; oauthClientId?: string; oauthClientSecret?: string}
+);
 
 export type DuckDBConfig = {
   type: "duckdb";
@@ -83,7 +93,7 @@ export async function getDatabaseConfig(
     else if (databaseName === "duckdb") config = {type: "duckdb"};
     else if (databaseName === "sqlite") config = {type: "sqlite"};
     else if (/\.duckdb$/i.test(databaseName)) config = {type: "duckdb", path: databaseName};
-    else if (/\.db$/i.test(databaseName)) config = {type: "sqlite", path: databaseName}; // TODO disambiguate
+    else if (/\.db$/i.test(databaseName)) config = {type: "sqlite", path: databaseName};
     else throw new Error(`database not found: ${databaseName}`);
   }
   return config;
@@ -93,10 +103,12 @@ export async function getDatabase(config: DatabaseConfig): Promise<QueryTemplate
   switch (config.type) {
     case "bigquery":
       return (await import("./bigquery.js")).default(config);
+    case "databricks":
+      return (await import("./databricks.js")).default(config);
     case "duckdb":
       return (await import("./duckdb.js")).default(config);
     case "sqlite":
-      return (await import(process.versions.bun ? "./sqlite-bun.js" : "./sqlite-node.js")).default(config);
+      return (await import(process.versions.bun ? "./sqlite-bun.js" : "./sqlite-node.js")).default(config); // prettier-ignore
     case "snowflake":
       return (await import("./snowflake.js")).default(config);
     case "postgres":
