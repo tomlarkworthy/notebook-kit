@@ -50,6 +50,18 @@
     npm add snowflake-sdk
     ```
 
+    To install the Google BigQuery driver:
+
+    ```sh
+    npm add @google-cloud/bigquery
+    ```
+
+    To install the Databricks driver:
+
+    ```sh
+    npm add @databricks/sql
+    ```
+
     Notebook Kit requires [Node.js](https://nodejs.org/en) 20.19+ or 22.12+. To use the SQLite database connector, you must use Node.js 24+. [Bun](https://bun.com/) 1.2+ should also work, but is not officially supported.
   </script>
   <script id="47" type="text/markdown">
@@ -323,7 +335,7 @@
     The Vite plugin is recommended for Vite-based applications.
   </script>
   <script id="42" type="text/markdown">
-    #### <code class="language-ts">observable({template?: string, transformTemplate?: (template: string) => string | Promise&lt;string&gt;, transformNotebook?: (notebook: Notebook) => Notebook | Promise&lt;Notebook&gt;}, window?: Window, parser?: DOMParser): PluginOption</code>
+    #### <code class="language-ts">observable({template?: string, transformTemplate?: (template: string) => string | Promise&lt;string&gt;, transformNotebook?: (notebook: Notebook) => Notebook | Promise&lt;Notebook&gt;, window?: Window, parser?: DOMParser} = {}): PluginOption</code>
 
     Returns a Vite plugin for rendering notebook HTML as vanilla HTML. Markdown and HTML cells are rendered statically (without any interpolated dynamic values), and then, if needed, replaced with dynamic content when the page loads. Other cell modes are exclusively dynamic. Pinned cells display their source code statically rendered below any output. Supported languages are syntax-highlighted using Lezer.
   </script>

@@ -35,7 +35,16 @@
     then a notebook `docs/example.html` can access any database configured in <code>docs/<wbr>.observable/<wbr>databases.json</code>. In the future, Observable Desktop will provide a built-in UI for configuring databases.
   </script>
   <script id="15" type="text/markdown">
-    **Which databases are supported?** Currently DuckDB, SQLite, Snowflake, and Postgres (PostgreSQL). The Postgres driver should also work with Postgres-compatible databases such as ClickHouse, Amazon Redshift, and Google Cloud SQL. We plan on adding more data connectors soon, notably Google BigQuery and Databricks. Our data connectors are [open-source](https://github.com/observablehq/notebook-kit/tree/main/src/databases) and we welcome contributions of additional database drivers! While you can query OLTP databases, we recommend OLAP databases because fast _ad hoc_ queries greatly accelerate analysis.
+    **Which databases are supported?** The following databases are supported, along with their current drivers:
+
+    * DuckDB - [@duckdb/node-api](https://www.npmjs.com/package/@duckdb/node-api)
+    * SQLite - [node:sqlite](https://nodejs.org/api/sqlite.html) or [bun:sqlite](https://bun.com/docs/api/sqlite)
+    * Snowflake - [snowflake-sdk](https://www.npmjs.com/package/snowflake-sdk)
+    * Postgres - [postgres](https://www.npmjs.com/package/postgres)
+    * Google BigQuery - [@google-cloud/bigquery](https://www.npmjs.com/package/@google-cloud/bigquery)
+    * Databricks - [@databricks/sql](https://www.npmjs.com/package/@databricks/sql)
+
+    The Postgres (PostgreSQL) driver should also work with Postgres-compatible databases such as ClickHouse, Amazon Redshift, and Google Cloud SQL. Our data connectors are [open-source](https://github.com/observablehq/notebook-kit/tree/main/src/databases) and we welcome contributions of additional database drivers! While you can query OLTP databases, we recommend OLAP databases because fast _ad hoc_ queries greatly accelerate analysis.
   </script>
   <script id="35" type="text/markdown">
     **How do I query my database?** Insert a new cell, say by clicking the <b>+</b> button between cells. Convert the new cell to SQL by hitting down or <span style="font-family: var(--sans-serif);">⌘4</span>. By default, SQL cells query the default `duckdb` in-memory database. To query a different database, edit the **database** in the cell toolbar, then click ↩︎ or hit <span style="font-family: var(--sans-serif);">return</span>. Then refocus the SQL cell, edit your query, and hit <span style="font-family: var(--sans-serif);">shift-return</span> to run it.
@@ -170,6 +179,18 @@
     ```sh
     npm add snowflake-sdk
     ```
+
+    To install the Google BigQuery driver:
+
+    ```sh
+    npm add @google-cloud/bigquery
+    ```
+
+    To install the Databricks driver:
+
+    ```sh
+    npm add @databricks/sql
+    ```
   </script>
   <script id="46" type="text/markdown">
     **What is the format of the `databases.json` file?** This file can configure multiple databases. Each database must have a unique name, the database type, and any corresponding configuration options. Here is how you might configure a `demo` Snowflake database:
@@ -248,5 +269,36 @@
     ```
 
     See the [Snowflake Node.js driver documentation](https://docs.snowflake.com/en/developer-guide/node-js/nodejs-driver-authenticate) for details.
+  </script>
+  <script id="66" type="text/markdown">
+    **How do I configure Google BigQuery?** The following options are supported:
+
+    ```ts
+    type BigQueryConfig = {
+      type: "bigquery";
+      apiKey?: string;
+      keyFilename?: string;
+      keyFile?: string;
+      projectId?: string;
+    }
+    ```
+
+    See the [Google Cloud SDK documentation](https://cloud.google.com/docs/authentication/set-up-adc-local-dev-environment) for details.
+  </script>
+  <script id="67" type="text/markdown">
+    **How do I configure Databricks?** The following options are supported:
+
+    ```ts
+    type DatabricksConfig = {
+      type: "databricks";
+      host: string;
+      path: string;
+    } & (
+      | {authType?: "access-token"; token: string}
+      | {authType: "databricks-oauth"; oauthClientId?: string; oauthClientSecret?: string}
+    )
+    ```
+
+    See the [Databricks SQL Driver for Node.js documentation](https://docs.databricks.com/aws/en/dev-tools/nodejs-sql-driver#authentication) for details.
   </script>
 </notebook>
