@@ -19,7 +19,8 @@ export default async function run(args?: string[]): Promise<void> {
         default: "."
       },
       database: {
-        type: "string"
+        type: "string",
+        default: "duckdb"
       },
       help: {
         type: "boolean",
@@ -31,7 +32,7 @@ export default async function run(args?: string[]): Promise<void> {
   if (values.help || !values.database) {
     console.log(`usage: notebooks query <...query>
 
-  --database <name>        name of the database
+  --database <name>        name of the database; defaults to duckdb
   --root <dir>             path to the root directory; defaults to cwd
   -h, --help               show this message
 `);
