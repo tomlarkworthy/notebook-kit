@@ -1,10 +1,21 @@
 import type {Column, Connection, ConnectionOptions, RowStatement} from "snowflake-sdk";
 import Snowflake from "snowflake-sdk";
 import type {ColumnSchema, QueryParam} from "../runtime/index.js";
-import {QueryTemplateFunction, SerializableQueryResult, SnowflakeConfig} from "./index.js";
+import {QueryTemplateFunction, SerializableQueryResult} from "./index.js";
 import {optionalString} from "./options.js";
 
 Snowflake.configure({logLevel: "OFF"});
+
+export type SnowflakeConfig = {
+  type: "snowflake";
+  account: string;
+  database?: string;
+  role?: string;
+  schema?: string;
+  username?: string;
+  warehouse?: string;
+  password?: string;
+};
 
 export default function snowflake(options: SnowflakeConfig): QueryTemplateFunction {
   return async (strings, ...params) => {

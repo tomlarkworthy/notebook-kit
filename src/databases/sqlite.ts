@@ -1,5 +1,10 @@
 import type {ColumnSchema} from "../runtime/index.js";
 
+export type SQLiteConfig = {
+  type: "sqlite";
+  path?: string;
+};
+
 export function getColumnType(type: string | null): ColumnSchema["type"] {
   switch (type) {
     case "INT":

@@ -1,7 +1,8 @@
 import type {StatementSync} from "node:sqlite";
 import {DatabaseSync} from "node:sqlite";
-import type {SQLiteConfig, QueryTemplateFunction} from "./index.js";
+import type {QueryTemplateFunction} from "./index.js";
 import type {ColumnSchema} from "../runtime/index.js";
+import type {SQLiteConfig} from "./sqlite.js";
 import {getColumnType} from "./sqlite.js";
 
 export default function sqlite({path = ":memory:"}: SQLiteConfig): QueryTemplateFunction {

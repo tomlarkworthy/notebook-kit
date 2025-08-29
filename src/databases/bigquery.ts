@@ -1,8 +1,16 @@
 import {BigQuery} from "@google-cloud/bigquery";
 import {BigQueryDate, BigQueryDatetime, BigQueryTimestamp} from "@google-cloud/bigquery";
 import type {TableField, TableSchema} from "@google-cloud/bigquery";
-import type {BigQueryConfig, QueryTemplateFunction} from "./index.js";
+import type {QueryTemplateFunction} from "./index.js";
 import type {ColumnSchema} from "../runtime/index.js";
+
+export type BigQueryConfig = {
+  type: "bigquery";
+  apiKey?: string;
+  keyFilename?: string;
+  keyFile?: string;
+  projectId?: string;
+};
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 export default function bigquery({type, ...options}: BigQueryConfig): QueryTemplateFunction {

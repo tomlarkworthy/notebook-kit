@@ -1,8 +1,14 @@
 import type {DuckDBResult, DuckDBType, Json} from "@duckdb/node-api";
 import {DuckDBConnection, DuckDBInstance} from "@duckdb/node-api";
 import {BIGINT, BIT, BLOB, BOOLEAN, DATE, DOUBLE, FLOAT, HUGEINT, INTEGER, INTERVAL, SMALLINT, TIME, TIMESTAMP, TIMESTAMP_MS, TIMESTAMP_NS, TIMESTAMP_S, TIMESTAMPTZ, TINYINT, UBIGINT, UHUGEINT, UINTEGER, USMALLINT, UTINYINT, UUID, VARCHAR, VARINT} from "@duckdb/node-api"; // prettier-ignore
-import type {DuckDBConfig, QueryTemplateFunction} from "./index.js";
+import type {QueryTemplateFunction} from "./index.js";
 import type {ColumnSchema} from "../runtime/index.js";
+
+export type DuckDBConfig = {
+  type: "duckdb";
+  path?: string;
+  options?: {[key: string]: string}; // https://duckdb.org/docs/stable/configuration/overview.html
+};
 
 export default function duckdb({path, options}: DuckDBConfig): QueryTemplateFunction {
   return async (strings, ...params) => {

@@ -1,6 +1,6 @@
 import {DBSQLClient, DBSQLLogger, LogLevel, thrift} from "@databricks/sql";
 import type {DBSQLSession} from "@databricks/sql";
-import type {DatabricksConfig, QueryTemplateFunction} from "./index.js";
+import type {QueryTemplateFunction} from "./index.js";
 import {ColumnSchema} from "../runtime/index.js";
 
 type IOperation = Awaited<ReturnType<DBSQLSession["executeStatement"]>>;
@@ -8,6 +8,15 @@ type TTableSchema = NonNullable<Awaited<ReturnType<IOperation["getSchema"]>>>;
 type TColumnDesc = TTableSchema["columns"][0];
 type TTypeDesc = TColumnDesc["typeDesc"];
 const TTypeId = thrift.TCLIService_types.TTypeId;
+
+export type DatabricksConfig = {
+  type: "databricks";
+  host: string;
+  path: string;
+} & (
+  | {authType?: "access-token"; token: string}
+  | {authType: "databricks-oauth"; oauthClientId?: string; oauthClientSecret?: string}
+);
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 export default function databricks({type, ...options}: DatabricksConfig): QueryTemplateFunction {

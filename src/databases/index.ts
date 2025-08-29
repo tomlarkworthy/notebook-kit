@@ -4,6 +4,12 @@ import {json} from "node:stream/consumers";
 import {isEnoent} from "../lib/error.js";
 import {hash as getQueryHash, nameHash as getNameHash} from "../lib/hash.js";
 import type {ColumnSchema, QueryParam} from "../runtime/index.js";
+import type {BigQueryConfig} from "./bigquery.js";
+import type {DatabricksConfig} from "./databricks.js";
+import type {DuckDBConfig} from "./duckdb.js";
+import type {SQLiteConfig} from "./sqlite.js";
+import type {SnowflakeConfig} from "./snowflake.js";
+import type {PostgresConfig} from "./postgres.js";
 
 export type DatabaseConfig =
   | BigQueryConfig
@@ -12,55 +18,6 @@ export type DatabaseConfig =
   | SQLiteConfig
   | SnowflakeConfig
   | PostgresConfig;
-
-export type BigQueryConfig = {
-  type: "bigquery";
-  apiKey?: string;
-  keyFilename?: string;
-  keyFile?: string;
-  projectId?: string;
-};
-
-export type DatabricksConfig = {
-  type: "databricks";
-  host: string;
-  path: string;
-} & (
-  | {authType?: "access-token"; token: string}
-  | {authType: "databricks-oauth"; oauthClientId?: string; oauthClientSecret?: string}
-);
-
-export type DuckDBConfig = {
-  type: "duckdb";
-  path?: string;
-  options?: {[key: string]: string}; // https://duckdb.org/docs/stable/configuration/overview.html
-};
-
-export type SQLiteConfig = {
-  type: "sqlite";
-  path?: string;
-};
-
-export type SnowflakeConfig = {
-  type: "snowflake";
-  account: string;
-  database?: string;
-  role?: string;
-  schema?: string;
-  username?: string;
-  warehouse?: string;
-  password?: string;
-};
-
-export type PostgresConfig = {
-  type: "postgres";
-  host?: string;
-  port?: string | number;
-  username?: string;
-  password?: string;
-  database?: string;
-  ssl?: boolean;
-};
 
 export type QueryTemplateFunction = (
   strings: readonly string[],

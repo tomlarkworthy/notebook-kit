@@ -1,7 +1,8 @@
 import type {Statement} from "bun:sqlite";
 import {Database} from "bun:sqlite";
-import type {SQLiteConfig, QueryTemplateFunction} from "./index.js";
+import type {QueryTemplateFunction} from "./index.js";
 import type {ColumnSchema} from "../runtime/index.js";
+import type {SQLiteConfig} from "./sqlite.js";
 import {getColumnType} from "./sqlite.js";
 
 export default function sqlite({path = ":memory:"}: SQLiteConfig): QueryTemplateFunction {

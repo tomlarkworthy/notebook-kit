@@ -1,8 +1,18 @@
 import type {Column, RowList} from "postgres";
 import Postgres from "postgres";
 import type {ColumnSchema} from "../runtime/index.js";
-import type {PostgresConfig, QueryTemplateFunction} from "./index.js";
+import type {QueryTemplateFunction} from "./index.js";
 import {optionalBoolean, optionalNumber, optionalString} from "./options.js";
+
+export type PostgresConfig = {
+  type: "postgres";
+  host?: string;
+  port?: string | number;
+  username?: string;
+  password?: string;
+  database?: string;
+  ssl?: boolean;
+};
 
 export default function postgres(options: PostgresConfig): QueryTemplateFunction {
   return async (strings, ...params) => {
