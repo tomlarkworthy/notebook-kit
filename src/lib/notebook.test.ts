@@ -17,6 +17,7 @@ test("converts a cell spec to a cell", () => {
     mode: "js",
     pinned: true,
     hidden: false,
+    format: undefined,
     output: undefined,
     database: undefined,
     since: undefined
@@ -30,6 +31,7 @@ test("computes an appropriate default pinned based on the cell mode", () => {
     mode: "md",
     pinned: false,
     hidden: false,
+    format: undefined,
     output: undefined,
     database: undefined,
     since: undefined

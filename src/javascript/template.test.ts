@@ -1,5 +1,18 @@
 import {expect, it} from "vitest";
 import {parseTemplate, transpileTemplate} from "./template.js";
+import {toCell} from "../lib/notebook.js";
+
+function md(value: string): string {
+  return transpileTemplate(toCell({id: 1, mode: "md", value}));
+}
+
+function html(value: string): string {
+  return transpileTemplate(toCell({id: 1, mode: "html", value}));
+}
+
+function node(value: string): string {
+  return transpileTemplate(toCell({id: 1, mode: "node", value}));
+}
 
 it("parses a simple template", () => {
   expect(parseTemplate(`Hello, world!`)).toMatchSnapshot();
@@ -21,22 +34,46 @@ it("parses a template with backslashes", () => {
   expect(parseTemplate(`Hello, \\world\\!`)).toMatchSnapshot();
 });
 
-it("transpiles a simple template", () => {
-  expect(transpileTemplate(`Hello, world!`)).toMatchSnapshot();
+it("transpiles a simple markdown template", () => {
+  expect(md(`Hello, world!`)).toMatchSnapshot();
 });
 
-it("transpiles an empty template", () => {
-  expect(transpileTemplate(``)).toMatchSnapshot();
+it("transpiles an empty markdown template", () => {
+  expect(md(``)).toMatchSnapshot();
 });
 
-it("transpiles a template with an interpolated expression", () => {
-  expect(transpileTemplate(`Hello, $\{"world"}!`)).toMatchSnapshot();
+it("transpiles a markdown template with an interpolated expression", () => {
+  expect(md(`Hello, $\{"world"}!`)).toMatchSnapshot();
 });
 
-it("transpiles a template with backquotes", () => {
-  expect(transpileTemplate(`Hello, \`world\`!`)).toMatchSnapshot();
+it("transpiles a markdown template with backquotes", () => {
+  expect(md(`Hello, \`world\`!`)).toMatchSnapshot();
 });
 
-it("transpiles a template with backslashes", () => {
-  expect(transpileTemplate(`Hello, \\world\\!`)).toMatchSnapshot();
+it("transpiles a markdown template with backslashes", () => {
+  expect(md(`Hello, \\world\\!`)).toMatchSnapshot();
+});
+
+it("transpiles a simple html template", () => {
+  expect(html(`Hello, world!`)).toMatchSnapshot();
+});
+
+it("transpiles an empty html template", () => {
+  expect(html(``)).toMatchSnapshot();
+});
+
+it("transpiles a html template with an interpolated expression", () => {
+  expect(html(`Hello, $\{"world"}!`)).toMatchSnapshot();
+});
+
+it("transpiles a html template with backquotes", () => {
+  expect(html(`Hello, \`world\`!`)).toMatchSnapshot();
+});
+
+it("transpiles a html template with backslashes", () => {
+  expect(html(`Hello, \\world\\!`)).toMatchSnapshot();
+});
+
+it("transpiles a node template with backslashes", () => {
+  expect(node(`Hello, \\world\\!`)).toMatchSnapshot();
 });

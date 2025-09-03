@@ -1,0 +1,51 @@
+import type {Cell} from "./notebook.js";
+
+export function isInterpreter(cell: Cell): boolean {
+  return cell.mode === "node";
+}
+
+export function getInterpreterExtension(format: Cell["format"]): string {
+  switch (format) {
+    case "html":
+    case "text":
+      return ".txt";
+    case "jpeg":
+      return ".jpg";
+    case "json":
+    case "arrow":
+    case "parquet":
+    case "csv":
+    case "tsv":
+    case "png":
+    case "gif":
+    case "webp":
+      return `.${format}`;
+    default:
+      return ".bin";
+  }
+}
+
+export function getInterpreterMethod(format: Cell["format"]): string {
+  switch (format) {
+    case "arrow":
+    case "parquet":
+    case "json":
+    case "blob":
+    case "text":
+      return `.${format}()`;
+    case "html":
+      return `.text().then((text) => html({raw: [text]}))`;
+    case "buffer":
+      return ".arrayBuffer()";
+    case "jpeg":
+    case "png":
+    case "gif":
+    case "webp":
+      return ".image()";
+    case "csv":
+    case "tsv":
+      return `.${format}({typed: true})`;
+    default:
+      return "";
+  }
+}

@@ -1,5 +1,6 @@
-import type {Node, ParserImpl, TemplateElement, TemplateLiteral} from "acorn";
+import type {Node, ParserImpl, TemplateLiteral} from "acorn";
 import {TokContext, tokTypes as tt, Parser, Options} from "acorn";
+import {getInterpreterMethod, isInterpreter} from "../lib/interpreters.js";
 import type {Cell} from "../lib/notebook.js";
 import {acornOptions} from "./parse.js";
 import {Sourcemap} from "./sourcemap.js";
@@ -83,19 +84,40 @@ export function transpileTemplate(input: string | Cell, tag = "", raw = false): 
   if (typeof input !== "string") {
     cell = input;
     input = cell.value;
-    tag = cell.mode === "tex" ? "tex.block" : cell.mode === "sql" ? getSqlTag(cell) : cell.mode;
-    raw = cell.mode !== "md";
+    tag = getTag(cell);
+    raw = getRaw(cell);
   }
   if (!input) return input;
   const source = new Sourcemap(input);
-  const node = parseTemplate(input);
-  (raw ? escapeRawTemplateElements : escapeTemplateElements)(source, node);
+  let node: Node;
+  if (cell && isInterpreter(cell)) {
+    node = {type: "Literal", start: 0, end: input.length};
+    escapeBacktick(source, node);
+    escapeBackslash(source, node);
+    escapeDollarCurly(source, node);
+  } else {
+    const template = parseTemplate(input);
+    (raw ? escapeRawTemplateElements : escapeTemplateElements)(source, template);
+    node = template;
+  }
   source.insertLeft(node.start, "`");
   source.insertRight(node.end, "`");
   source.insertLeft(node.start, tag);
-  let output = String(source);
-  if (cell?.mode === "sql" && !cell.hidden) output += ".then(Inputs.table)";
-  return output;
+  return String(source) + (cell ? getSuffix(cell) : "");
+}
+
+function getRaw(cell: Cell): boolean {
+  return cell.mode !== "md";
+}
+
+function getTag(cell: Cell): string {
+  return cell.mode === "tex"
+    ? "tex.block"
+    : cell.mode === "sql"
+      ? getSqlTag(cell)
+      : isInterpreter(cell)
+        ? getInterpreterTag(cell)
+        : cell.mode;
 }
 
 function getSqlTag(cell: Cell): string {
@@ -105,10 +127,28 @@ function getSqlTag(cell: Cell): string {
     : `DatabaseClient(${JSON.stringify(database)}, {id: ${id}${since === undefined ? "" : `, since: ${JSON.stringify(since)}`}}).sql`;
 }
 
+function getInterpreterTag(cell: Cell): string {
+  const {id, mode, format, since} = cell;
+  return `Interpreter(${JSON.stringify(mode)}, {id: ${id}${format === undefined ? "" : `, format: ${JSON.stringify(format)}`}${since === undefined ? "" : `, since: ${JSON.stringify(since)}`}}).run(`;
+}
+
+function getSuffix(cell: Cell): string {
+  return cell.mode === "sql" && !cell.hidden
+    ? ".then(Inputs.table)"
+    : isInterpreter(cell)
+      ? getInterpreterSuffix(cell)
+      : "";
+}
+
+function getInterpreterSuffix(cell: Cell): string {
+  const method = getInterpreterMethod(cell.format);
+  return method ? `).then((file) => file${method})` : "";
+}
+
 function escapeTemplateElements(source: Sourcemap, node: TemplateLiteral): void {
   for (const quasi of node.quasis) {
     escapeBacktick(source, quasi);
-    escapeBackslash(source, quasi);
+    escapeLiteralBackslash(source, quasi);
   }
 }
 
@@ -119,7 +159,8 @@ function escapeRawTemplateElements(source: Sourcemap, node: TemplateLiteral): vo
   interpolateTerminalBackslash(source);
 }
 
-function escapeBacktick(source: Sourcemap, {start, end}: TemplateElement): void {
+/** Escapes any backtick. */
+function escapeBacktick(source: Sourcemap, {start, end}: Node): void {
   const {input} = source;
   for (let i = start; i < end; ++i) {
     if (input.charCodeAt(i) === CODE_BACKTICK) {
@@ -128,7 +169,18 @@ function escapeBacktick(source: Sourcemap, {start, end}: TemplateElement): void 
   }
 }
 
-function escapeBackslash(source: Sourcemap, {start, end}: TemplateElement): void {
+/** Escapes any backslash. */
+function escapeBackslash(source: Sourcemap, {start, end}: Node): void {
+  const {input} = source;
+  for (let i = start; i < end; ++i) {
+    if (input.charCodeAt(i) === CODE_BACKSLASH) {
+      source.insertRight(i, "\\");
+    }
+  }
+}
+
+/** Escapes a backslash, unless it is used to escape a dollar-curly such as "$\{" or "\${". */
+function escapeLiteralBackslash(source: Sourcemap, {start, end}: Node): void {
   const {input} = source;
   let afterDollar = false;
   let oddBackslashes = false;
@@ -163,4 +215,13 @@ function interpolateTerminalBackslash(source: Sourcemap): void {
     oddBackslashes = !oddBackslashes;
   }
   if (oddBackslashes) source.replaceRight(input.length - 1, input.length, "${'\\\\'}");
+}
+
+/** Escapes a dollar curly, from "${…}" to "$\{…}". */
+function escapeDollarCurly(source: Sourcemap, {start, end}: Node): void {
+  const {input} = source;
+  for (let i = start; i < end; ++i) {
+    if (input.charCodeAt(i) !== CODE_BRACEL || input.charCodeAt(i - 1) !== CODE_DOLLAR) continue;
+    source.insertRight(i, "\\");
+  }
 }

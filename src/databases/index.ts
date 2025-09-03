@@ -2,7 +2,7 @@ import {createReadStream} from "node:fs";
 import {dirname, join} from "node:path";
 import {json} from "node:stream/consumers";
 import {isEnoent} from "../lib/error.js";
-import {hash as getQueryHash, nameHash as getNameHash} from "../lib/hash.js";
+import {hash, nameHash} from "../lib/hash.js";
 import type {ColumnSchema, QueryParam} from "../runtime/index.js";
 import type {BigQueryConfig} from "./bigquery.js";
 import type {DatabricksConfig} from "./databricks.js";
@@ -93,6 +93,6 @@ export async function getQueryCachePath(
   ...params: unknown[]
 ): Promise<string> {
   const sourceDir = dirname(sourcePath);
-  const cacheName = `${await getNameHash(databaseName)}-${await getQueryHash(strings, ...params)}.json`;
+  const cacheName = `${await nameHash(databaseName)}-${await hash(strings, ...params)}.json`;
   return join(sourceDir, ".observable", "cache", cacheName);
 }

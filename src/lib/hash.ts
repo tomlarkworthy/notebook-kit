@@ -14,6 +14,10 @@ export async function hash(strings: readonly string[], ...params: unknown[]): Pr
   return base36(await sha256(JSON.stringify([strings, ...params])), 16);
 }
 
+export async function stringHash(string: string): Promise<string> {
+  return base36(await sha256(string), 16);
+}
+
 export async function nameHash(name: string): Promise<string> {
   return /^[\w-]+$/.test(name)
     ? name

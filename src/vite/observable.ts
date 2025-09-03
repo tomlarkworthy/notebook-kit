@@ -1,6 +1,6 @@
-import {fork} from "node:child_process";
-import {existsSync} from "node:fs";
-import {readFile} from "node:fs/promises";
+import {fork, spawn} from "node:child_process";
+import {createWriteStream, existsSync} from "node:fs";
+import {mkdir, readFile} from "node:fs/promises";
 import {dirname, join, resolve} from "node:path";
 import {relative} from "node:path/posix";
 import {fileURLToPath} from "node:url";
@@ -8,6 +8,8 @@ import type {TemplateLiteral} from "acorn";
 import {JSDOM} from "jsdom";
 import type {PluginOption, IndexHtmlTransformContext} from "vite";
 import {getQueryCachePath} from "../databases/index.js";
+import {getInterpreterCachePath} from "../interpreters/index.js";
+import {getInterpreterMethod} from "../lib/interpreters.js";
 import type {Cell, Notebook} from "../lib/notebook.js";
 import {deserialize} from "../lib/serialize.js";
 import {Sourcemap} from "../javascript/sourcemap.js";
@@ -74,6 +76,8 @@ export function observable({
     transformIndexHtml: {
       order: "pre",
       async handler(input, context) {
+        if (context.path.startsWith("/.observable/")) return input;
+
         const notebook = await transformNotebook(deserialize(input, {parser}), context);
         const templateHtml = await transformTemplate(await readFile(template, "utf-8"), context);
         const document = parser.parseFromString(templateHtml, "text/html");
@@ -94,7 +98,7 @@ export function observable({
         let cells = document.querySelector("main");
         cells ??= document.body.appendChild(document.createElement("main"));
         for (const cell of notebook.cells) {
-          const {id, mode, pinned, hidden, value} = cell;
+          const {id, mode, pinned, hidden, format, value} = cell;
           const contents = document.createDocumentFragment();
           const div = contents.appendChild(document.createElement("div"));
           div.id = `cell-${id}`;
@@ -120,12 +124,34 @@ export function observable({
                 const child = fork(fileURLToPath(import.meta.resolve("../../bin/query.js")), args);
                 await new Promise((resolve, reject) => {
                   child.on("error", reject);
-                  child.on("exit", resolve);
+                  child.on("exit", resolve); // TODO check exit code
                 });
               }
               cell.mode = "js";
               cell.value = `FileAttachment(${JSON.stringify(relative(dir, cachePath))}).json().then(DatabaseClient.revive)${hidden ? "" : `.then(Inputs.table)${cell.output ? ".then(view)" : ""}`}`;
             }
+          } else if (mode === "node") {
+            const {filename: sourcePath} = context;
+            const sourceDir = dirname(sourcePath);
+            const cachePath = await getInterpreterCachePath(sourcePath, mode, format, value);
+            if (!existsSync(cachePath)) {
+              await mkdir(dirname(cachePath), {recursive: true});
+              const args = ["--input-type=module", "--permission", "--allow-fs-read=."];
+              const child = spawn("node", args, {cwd: sourceDir});
+              child.stdin.end(value);
+              child.stderr.pipe(process.stderr);
+              child.stdout.pipe(createWriteStream(cachePath));
+              await new Promise((resolve, reject) => {
+                child.on("error", reject);
+                child.on("exit", resolve); // TODO check exit code
+              });
+            }
+            if (format === "html" && !hidden) {
+              div.innerHTML = await readFile(cachePath, "utf-8");
+              if (!cell.output) statics.add(cell);
+            }
+            cell.mode = "js";
+            cell.value = `FileAttachment(${JSON.stringify(relative(sourceDir, cachePath))})${getInterpreterMethod(format)}`;
           }
           collectAssets(assets, div);
           if (pinned) {

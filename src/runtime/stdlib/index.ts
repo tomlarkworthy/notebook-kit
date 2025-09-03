@@ -2,6 +2,7 @@ import {DatabaseClient} from "./databaseClient.js";
 import * as DOM from "./dom/index.js";
 import {FileAttachment} from "./fileAttachment.js";
 import * as Generators from "./generators/index.js";
+import {Interpreter} from "./interpreter.js";
 import {Mutable} from "./mutable.js";
 import {Observer} from "./observer.js";
 import * as recommendedLibraries from "./recommendedLibraries.js";
@@ -16,6 +17,7 @@ export const library = {
   DatabaseClient: () => DatabaseClient,
   FileAttachment: () => FileAttachment,
   Generators: () => Generators,
+  Interpreter: () => Interpreter,
   Mutable: () => Mutable,
   DOM: () => DOM, // deprecated!
   require: () => require, // deprecated!

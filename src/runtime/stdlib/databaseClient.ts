@@ -31,7 +31,7 @@ export interface ColumnSchema {
 export interface QueryOptionsSpec {
   /** if present, the id of the cell that owns this database client */
   id?: number;
-  /** if present, query results are at least as fresh as the specified date */
+  /** if present, results are at least as fresh as the specified date */
   since?: Date | string | number;
 }
 

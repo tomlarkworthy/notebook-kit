@@ -85,9 +85,14 @@ pre[data-language] {
 
 pre[data-language]::before {
   content: attr(data-language);
-  float: right;
-  margin: -4px -8px -4px -4px;
-  padding: 4px;
+  position: sticky;
+  top: 0;
+  left: 0;
+  height: 0;
+  display: block;
+  text-align: right;
+  margin-right: -4px;
+  pointer-events: none;
   font-size: 12px;
   line-height: 21px;
   color: var(--theme-foreground-muted);
@@ -157,12 +162,16 @@ pre {
   background-color: var(--theme-background-alt);
   border-radius: 4px;
   margin: 1rem -1rem;
-  /* max-width: 960px; */
   min-height: 1.5em;
   padding: 4px 1rem;
   overflow-x: auto;
+  overscroll-behavior-x: none;
   box-sizing: border-box;
-  white-space: pre-wrap;
+}
+
+pre > code:only-child {
+  display: block;
+  width: fit-content;
 }
 
 input:not([type]),

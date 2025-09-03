@@ -1,0 +1,35 @@
+<!doctype html>
+<notebook theme="slate">
+  <title>Observable Notebooks Data loaders</title>
+  <script id="1" type="text/markdown">
+    # Observable Notebooks<br> <span style="color: var(--theme-foreground-faint);">Data loaders</span>
+
+    <link rel="stylesheet" href="./style.css">
+  </script>
+  <script type="text/markdown">
+    Data loaders are special cells that run at build time via an interpreter rather than in the browser at runtime. Data loader cells are useful for preparing static data, ensuring consistency and stability, and greatly improving runtime performance. Think of data loaders as a generalization of [database connectors](./databases) that allow languages besides SQL.
+  </script>
+  <script type="text/markdown">
+    For example, here is a Node.js data loader that says hello and reports the current version of Node.js:
+  </script>
+  <script type="application/vnd.node.javascript" format="text" pinned="">
+    process.stdout.write(`Hello from Node ${process.version}!`);
+  </script>
+  <script type="text/markdown">
+    <aside>The cell above is JavaScript that runs in Node.js, unlike normal JavaScript cells that run in the browser.</aside>
+
+    The output of a data loader cell is automatically saved to a `.observable/cache` directory on your local file system alongside your notebooks.
+  </script>
+  <script type="text/markdown">
+    In Observable Desktop, you can re-run a data loader cell by clicking the **Play** button, by hitting <span style="font-family: var(--sans-serif);">**shift-return**</span>, or by clicking on the query age in the cell toolbar. In Notebook Kit, delete the corresponding file from the `.observable/cache` directory; you can also use continuous deployment, such as GitHub Actions, to refresh data automatically.
+  </script>
+  <script type="text/markdown">
+    Currently, Notebook Kit only supports the Node.js interpreter for data loader cells, but we plan on adding other interpreters, notably Python and R.
+  </script>
+  <script type="text/markdown">
+    To improve security, the Node.js interpreter uses [process-based permissions](https://nodejs.org/api/permissions.html). Node.js cells are only allowed to read files in the same directory as the notebook, with no other permissions. (We may offer a way to relax permissions in the future, but want to encourage safety; let us know if you run into issues.)
+  </script>
+  <script type="text/markdown">
+    Due to the above security restrictions, if you wish to import installed packages, they must be installed within the same directory as the notebook (_e.g._, if your notebook is in `docs`, packages must be installed in `docs/node_modules` with a `docs/package.json`).
+  </script>
+</notebook>

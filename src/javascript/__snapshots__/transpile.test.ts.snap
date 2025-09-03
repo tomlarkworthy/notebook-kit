@@ -293,6 +293,91 @@ return (
 }
 `;
 
+exports[`transpiles node cells 1`] = `
+{
+  "autodisplay": true,
+  "autoview": false,
+  "body": "(Interpreter) => {
+return (
+Interpreter("node", {id: -1, format: "buffer"}).run(\`process.stdout.write(\\\`Node $\\{process.version}\\\`);\`).then((file) => file.arrayBuffer())
+)
+}",
+  "inputs": [
+    "Interpreter",
+  ],
+  "output": undefined,
+  "outputs": [],
+}
+`;
+
+exports[`transpiles node cells 2`] = `
+{
+  "autodisplay": true,
+  "autoview": false,
+  "body": "(Interpreter) => {
+return (
+Interpreter("node", {id: -1, format: "buffer"}).run(\`process.stdout.write(\\\`Node \\\\$\\{process.version}\\\`);\`).then((file) => file.arrayBuffer())
+)
+}",
+  "inputs": [
+    "Interpreter",
+  ],
+  "output": undefined,
+  "outputs": [],
+}
+`;
+
+exports[`transpiles node cells 3`] = `
+{
+  "autodisplay": true,
+  "autoview": false,
+  "body": "(Interpreter) => {
+return (
+Interpreter("node", {id: -1, format: "buffer"}).run(\`process.stdout.write(\\\`Node \\\\\\\\$\\{process.version}\\\`);\`).then((file) => file.arrayBuffer())
+)
+}",
+  "inputs": [
+    "Interpreter",
+  ],
+  "output": undefined,
+  "outputs": [],
+}
+`;
+
+exports[`transpiles node cells 4`] = `
+{
+  "autodisplay": true,
+  "autoview": false,
+  "body": "(Interpreter) => {
+return (
+Interpreter("node", {id: -1, format: "buffer"}).run(\`process.stdout.write(\\\`Node $\\\\{process.version}\\\`);\`).then((file) => file.arrayBuffer())
+)
+}",
+  "inputs": [
+    "Interpreter",
+  ],
+  "output": undefined,
+  "outputs": [],
+}
+`;
+
+exports[`transpiles node cells 5`] = `
+{
+  "autodisplay": true,
+  "autoview": false,
+  "body": "(Interpreter) => {
+return (
+Interpreter("node", {id: -1, format: "buffer"}).run(\`process.stdout.write(\\\`Node \\\\$\\\\{process.version}\\\`);\`).then((file) => file.arrayBuffer())
+)
+}",
+  "inputs": [
+    "Interpreter",
+  ],
+  "output": undefined,
+  "outputs": [],
+}
+`;
+
 exports[`transpiles static imports with {type: 'observable'} 1`] = `
 {
   "autodisplay": false,

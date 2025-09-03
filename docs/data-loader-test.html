@@ -1,0 +1,133 @@
+<!doctype html>
+<notebook theme="midnight">
+  <title>Observable Notebooks Data loader test</title>
+  <script id="1" type="text/markdown">
+    # Observable Notebooks<br> <span style="color: var(--theme-foreground-faint);">Data loader test</span>
+
+    <link rel="stylesheet" href="./style.css">
+  </script>
+  <script type="module" pinned="">
+    Plot.plot({
+      width: 960,
+      projection: {
+        type: "transverse-mercator",
+        domain: land,
+        rotate: [4, 0]
+      },
+      color: {
+        domain: d3.range(n * n),
+        range: d3.cross(d3.schemeBlues[n], d3.schemeOranges[n]).map(mixblend)
+      },
+      marks: [
+        Plot.raster({length: ppt.length}, {
+          x: lon,
+          y: lat,
+          fill: 0,
+          interpolate: interpolateBivariate(n, ppt, temp),
+          clip: land
+        }),
+        Plot.geo(land, {strokeWidth: 0.5}),
+        (index, {scales}) =>
+          Plot.plot({
+            color: scales.color,
+            axis: null,
+            inset: 18,
+            width: 136,
+            height: 136,
+            padding: 0,
+            y: {reverse: true},
+            style: "transform-origin: 68px 68px; transform: rotate(-45deg) translate(0px, 20px)",
+            marks: [
+              Plot.cell(d3.cross(d3.range(n), d3.range(n)), {
+                fill: ([a, b]) => n * a + b,
+                inset: -0.5
+              }),
+              Plot.text(["Precipitation →"], {
+                frameAnchor: "bottom-right",
+                fontWeight: 600,
+                dx: -18,
+                dy: -6
+              }),
+              Plot.text(["← Temperature"], {
+                frameAnchor: "top-left",
+                fontWeight: 600,
+                rotate: 90,
+                dx: 12,
+                dy: 18
+              })
+            ]
+          })
+      ]
+    })
+  </script>
+  <script type="module" pinned="">
+    function interpolateBivariate(n, v1, v2) {
+      const r = d3.range(n);
+      const s1 = d3.scaleQuantile(v1, r);
+      const s2 = d3.scaleQuantile(v2, r);
+      const interpolate = Plot.interpolatorBarycentric();
+      return (I, w, h, X, Y) => {
+        I = I.filter((i) => !isNaN(v1[i]) && !isNaN(v2[i]));
+        const V1 = interpolate(I, w, h, X, Y, v1);
+        const V2 = interpolate(I, w, h, X, Y, v2);
+        return Uint8Array.from(V1, (_, i) => n * s1(V1[i]) + s2(V2[i]));
+      };
+    }
+  </script>
+  <script type="module" pinned="">
+    const n = 7; // number of color classes
+  </script>
+  <script type="module" pinned="">
+    function mixblend([a, b]) {
+      a = d3.rgb(a);
+      b = d3.rgb(b);
+      const l = Math.min(255, b.r + b.g + b.b);
+      a.r *= b.r / l;
+      a.g *= b.g / l;
+      a.b *= b.b / l;
+      return a;
+    }
+  </script>
+  <script type="module" pinned="">
+    import {NetCDFReader} from "npm:netcdfjs";
+
+    const tmaxReader = new NetCDFReader(tmaxBuffer);
+    const tminReader = new NetCDFReader(tminBuffer);
+    const pptReader = new NetCDFReader(pptBuffer);
+    const tmax = Float32Array.from(tmaxReader.getDataVariable("tmax"), d => d !== -32768 ? d * 0.01 - 99 : NaN);
+    const tmin = Float32Array.from(tminReader.getDataVariable("tmin"), d => d !== -32768 ? d * 0.01 - 99 : NaN);
+    const ppt = Float32Array.from(pptReader.getDataVariable("ppt"), d => d !== -2147483648 ? d * 0.1 : NaN).map(d => d < 10 ? NaN : d);
+    const lx = tmaxReader.getDataVariable("lon");
+    const ly = tmaxReader.getDataVariable("lat");
+    const l = lx.length;
+    const temp = tmax.map((max, i) => (max + tmin[i]) / 2);
+    const lon = (d, i) => lx[i % l];
+    const lat = (d, i) => ly[i/ l | 0];
+  </script>
+  <script type="application/vnd.node.javascript" pinned="" hidden="" output="tmaxBuffer">
+    import {Readable} from "node:stream";
+
+    fetch("http://thredds.northwestknowledge.net:8080/thredds/ncss/agg_terraclimate_tmax_1958_CurrentYear_GLOBE.nc?var=tmax&south=49.674&north=61.061&west=-14.015517&east=2.0919117&disableProjSubset=on&addLatLon=true&horizStride=1&accept=netcdf")
+      .then((response) => response.ok ? response.body : Promise.reject(response.status))
+      .then((body) => Readable.from(body).pipe(process.stdout));
+  </script>
+  <script type="application/vnd.node.javascript" pinned="" hidden="" output="tminBuffer">
+    import {Readable} from "node:stream";
+
+    fetch("http://thredds.northwestknowledge.net:8080/thredds/ncss/agg_terraclimate_tmin_1958_CurrentYear_GLOBE.nc?var=tmin&south=49.674&north=61.061&west=-14.015517&east=2.0919117&disableProjSubset=on&addLatLon=true&horizStride=1&accept=netcdf")
+      .then((response) => response.ok ? response.body : Promise.reject(response.status))
+      .then((body) => Readable.from(body).pipe(process.stdout));
+  </script>
+  <script type="application/vnd.node.javascript" pinned="" hidden="" output="pptBuffer">
+    import {Readable} from "node:stream";
+
+    fetch("http://thredds.northwestknowledge.net:8080/thredds/ncss/agg_terraclimate_ppt_1958_CurrentYear_GLOBE.nc?var=ppt&south=49.674&north=61.061&west=-14.015517&east=2.0919117&disableProjSubset=on&addLatLon=true&horizStride=1&accept=netcdf")
+      .then((response) => response.ok ? response.body : Promise.reject(response.status))
+      .then((body) => Readable.from(body).pipe(process.stdout));
+  </script>
+  <script type="module" pinned="">
+    const land = fetch("https://cdn.jsdelivr.net/npm/world-atlas@2/countries-10m.json")
+      .then((response) => response.ok ? response.json() : Promise.reject(response.status))
+      .then((world) => topojson.feature(world, {type: "GeometryCollection", geometries: world.objects.countries.geometries.filter(({id}) => id === "826" || id === "372")}));
+  </script>
+</notebook>

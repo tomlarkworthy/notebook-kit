@@ -14,6 +14,8 @@ export type * from "./stdlib/databaseClient.js";
 export {DatabaseClient} from "./stdlib/databaseClient.js";
 export type * from "./stdlib/fileAttachment.js";
 export {FileAttachment, registerFile} from "./stdlib/fileAttachment.js";
+export type * from "./stdlib/interpreter.js";
+export {Interpreter} from "./stdlib/interpreter.js";
 
 export class NotebookRuntime {
   readonly runtime: Runtime & {fileAttachments: typeof fileAttachments};

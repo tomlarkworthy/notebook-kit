@@ -52,3 +52,11 @@ it("transpiles import.meta.resolve", () => {
   expect(transpile('import.meta.resolve("./test")', "js", {resolveLocalImports: true})).toMatchSnapshot();
   expect(transpile('import.meta.resolve("./test")', "js", {resolveLocalImports: false})).toMatchSnapshot();
 });
+
+it("transpiles node cells", () => {
+  expect(transpile("process.stdout.write(`Node ${process.version}`);", "node")).toMatchSnapshot();
+  expect(transpile("process.stdout.write(`Node \\${process.version}`);", "node")).toMatchSnapshot();
+  expect(transpile("process.stdout.write(`Node \\\\${process.version}`);", "node")).toMatchSnapshot();
+  expect(transpile("process.stdout.write(`Node $\\{process.version}`);", "node")).toMatchSnapshot();
+  expect(transpile("process.stdout.write(`Node \\$\\{process.version}`);", "node")).toMatchSnapshot();
+});

@@ -20,6 +20,7 @@ export function serialize(notebook: Notebook, {document = globalThis.document} =
     if (cell.hidden) _cell.setAttribute("hidden", "");
     if (cell.database) _cell.setAttribute("database", cell.database);
     if (cell.output) _cell.setAttribute("output", cell.output);
+    if (cell.format) _cell.setAttribute("format", cell.format);
     _notebook.appendChild(_cell);
   }
   _notebook.appendChild(document.createTextNode("\n"));
@@ -45,9 +46,10 @@ export function deserialize(data: string, {parser = new DOMParser()} = {}): Note
       const value = dedent(cell.textContent?.replace(/<\\(?=\\*\/script(\s|>))/gi, "<") ?? "");
       const pinned = cell.hasAttribute("pinned");
       const hidden = cell.hasAttribute("hidden");
+      const format = deserializeFormat(cell.getAttribute("format"));
       const output = cell.getAttribute("output") ?? undefined;
       const database = cell.getAttribute("database") ?? undefined;
-      return {id, mode, value, pinned, hidden, output, database};
+      return {id, mode, value, pinned, hidden, format, output, database};
     }
   );
   return toNotebook({title, theme, readOnly, cells});
@@ -65,6 +67,8 @@ function serializeMode(mode: Cell["mode"]): string {
       return "application/sql";
     case "dot":
       return "text/vnd.graphviz";
+    case "node":
+      return "application/vnd.node.javascript";
     case "ojs":
       return "application/vnd.observable.javascript";
     default:
@@ -84,10 +88,31 @@ function deserializeMode(mode: string | null): Cell["mode"] {
       return "sql";
     case "text/vnd.graphviz":
       return "dot";
+    case "application/vnd.node.javascript":
+      return "node";
     case "application/vnd.observable.javascript":
       return "ojs";
     default:
       return "js";
+  }
+}
+
+function deserializeFormat(format: string | null): Cell["format"] {
+  switch (format) {
+    case "text":
+    case "blob":
+    case "buffer":
+    case "json":
+    case "csv":
+    case "tsv":
+    case "jpeg":
+    case "png":
+    case "webp":
+    case "gif":
+    case "arrow":
+    case "parquet":
+    case "html":
+      return format;
   }
 }
 
