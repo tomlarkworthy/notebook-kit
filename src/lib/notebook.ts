@@ -1,3 +1,5 @@
+import {isInterpreter} from "./interpreters.js";
+
 export type NotebookTheme =
   | "air"
   | "coffee"
@@ -37,7 +39,7 @@ export interface CellSpec {
   /** the committed cell value; defaults to empty */
   value?: string;
   /** the mode; affects how the value is evaluated; defaults to js */
-  mode?: "js" | "ojs" | "md" | "html" | "tex" | "dot" | "sql" | "node";
+  mode?: "js" | "ojs" | "md" | "html" | "tex" | "dot" | "sql" | "node" | "python";
   /** if true, the editor will stay open when not focused; defaults to false */
   pinned?: boolean;
   /** if true, implicit display will be suppressed; defaults to false */
@@ -94,7 +96,7 @@ export function toCell({
   pinned = defaultPinned(mode),
   hidden = false,
   output,
-  format = mode === "node" ? "buffer" : undefined,
+  format = isInterpreter(mode) ? "buffer" : undefined,
   database = mode === "sql" ? "var:db" : undefined,
   since
 }: CellSpec): Cell {
@@ -105,7 +107,7 @@ export function toCell({
     pinned,
     hidden,
     output,
-    format: mode === "node" ? format : undefined,
+    format: isInterpreter(mode) ? format : undefined,
     database: mode === "sql" ? database : undefined,
     since: since !== undefined ? asDate(since) : undefined
   };
@@ -116,5 +118,5 @@ function asDate(date: Date | string | number): Date {
 }
 
 export function defaultPinned(mode: Cell["mode"]): boolean {
-  return mode === "js" || mode === "sql" || mode === "node" || mode === "ojs";
+  return mode === "js" || mode === "sql" || isInterpreter(mode) || mode === "ojs";
 }

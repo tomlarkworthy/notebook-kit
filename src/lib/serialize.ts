@@ -69,6 +69,8 @@ function serializeMode(mode: Cell["mode"]): string {
       return "text/vnd.graphviz";
     case "node":
       return "application/vnd.node.javascript";
+    case "python":
+      return "text/x-python";
     case "ojs":
       return "application/vnd.observable.javascript";
     default:
@@ -90,6 +92,8 @@ function deserializeMode(mode: string | null): Cell["mode"] {
       return "dot";
     case "application/vnd.node.javascript":
       return "node";
+    case "text/x-python":
+      return "python";
     case "application/vnd.observable.javascript":
       return "ojs";
     default:

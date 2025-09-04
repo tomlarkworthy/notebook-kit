@@ -90,7 +90,7 @@ export function transpileTemplate(input: string | Cell, tag = "", raw = false): 
   if (!input) return input;
   const source = new Sourcemap(input);
   let node: Node;
-  if (cell && isInterpreter(cell)) {
+  if (cell && isInterpreter(cell.mode)) {
     node = {type: "Literal", start: 0, end: input.length};
     escapeBacktick(source, node);
     escapeBackslash(source, node);
@@ -115,7 +115,7 @@ function getTag(cell: Cell): string {
     ? "tex.block"
     : cell.mode === "sql"
       ? getSqlTag(cell)
-      : isInterpreter(cell)
+      : isInterpreter(cell.mode)
         ? getInterpreterTag(cell)
         : cell.mode;
 }
@@ -135,7 +135,7 @@ function getInterpreterTag(cell: Cell): string {
 function getSuffix(cell: Cell): string {
   return cell.mode === "sql" && !cell.hidden
     ? ".then(Inputs.table)"
-    : isInterpreter(cell)
+    : isInterpreter(cell.mode)
       ? getInterpreterSuffix(cell)
       : "";
 }

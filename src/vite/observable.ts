@@ -8,8 +8,8 @@ import type {TemplateLiteral} from "acorn";
 import {JSDOM} from "jsdom";
 import type {PluginOption, IndexHtmlTransformContext} from "vite";
 import {getQueryCachePath} from "../databases/index.js";
-import {getInterpreterCachePath} from "../interpreters/index.js";
-import {getInterpreterMethod} from "../lib/interpreters.js";
+import {getInterpreterCachePath, getInterpreterCommand} from "../interpreters/index.js";
+import {getInterpreterMethod, isInterpreter} from "../lib/interpreters.js";
 import type {Cell, Notebook} from "../lib/notebook.js";
 import {deserialize} from "../lib/serialize.js";
 import {Sourcemap} from "../javascript/sourcemap.js";
@@ -130,14 +130,14 @@ export function observable({
               cell.mode = "js";
               cell.value = `FileAttachment(${JSON.stringify(relative(dir, cachePath))}).json().then(DatabaseClient.revive)${hidden ? "" : `.then(Inputs.table)${cell.output ? ".then(view)" : ""}`}`;
             }
-          } else if (mode === "node") {
+          } else if (isInterpreter(mode)) {
             const {filename: sourcePath} = context;
             const sourceDir = dirname(sourcePath);
             const cachePath = await getInterpreterCachePath(sourcePath, mode, format, value);
             if (!existsSync(cachePath)) {
               await mkdir(dirname(cachePath), {recursive: true});
-              const args = ["--input-type=module", "--permission", "--allow-fs-read=."];
-              const child = spawn("node", args, {cwd: sourceDir});
+              const [command, args] = getInterpreterCommand(mode);
+              const child = spawn(command, args, {cwd: sourceDir});
               child.stdin.end(value);
               child.stderr.pipe(process.stderr);
               child.stdout.pipe(createWriteStream(cachePath));

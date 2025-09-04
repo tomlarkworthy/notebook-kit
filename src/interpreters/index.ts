@@ -13,3 +13,14 @@ export async function getInterpreterCachePath(
   const cacheName = `${await nameHash(interpreter)}-${await stringHash(input)}${getInterpreterExtension(format)}`; // TODO avoid conflict with database cache?
   return join(sourceDir, ".observable", "cache", cacheName);
 }
+
+export function getInterpreterCommand(interpreter: string): [command: string, args: string[]] {
+  switch (interpreter) {
+    case "node":
+      return ["node", ["--input-type=module", "--permission", "--allow-fs-read=."]];
+    case "python":
+      return ["python3", []];
+    default:
+      throw new Error(`unknown interpreter: ${interpreter}`);
+  }
+}

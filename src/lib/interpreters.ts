@@ -1,7 +1,7 @@
 import type {Cell} from "./notebook.js";
 
-export function isInterpreter(cell: Cell): boolean {
-  return cell.mode === "node";
+export function isInterpreter(mode: Cell["mode"]): boolean {
+  return mode === "node" || mode === "python";
 }
 
 export function getInterpreterExtension(format: Cell["format"]): string {
