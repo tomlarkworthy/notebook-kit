@@ -60,7 +60,9 @@ export interface CellSpec {
     | "png"
     | "arrow"
     | "parquet"
-    | "html";
+    | "html"
+    | "svg"
+    | "xml";
   /** for SQL cells, the database to query; use var:<name> to refer to a variable */
   database?: string;
   /** for SQL cells, the oldest allowable age of the cached query result */

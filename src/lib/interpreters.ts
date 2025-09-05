@@ -18,7 +18,9 @@ export function getInterpreterExtension(format: Cell["format"]): string {
     case "tsv":
     case "png":
     case "gif":
+    case "svg":
     case "webp":
+    case "xml":
       return `.${format}`;
     default:
       return ".bin";
@@ -32,6 +34,7 @@ export function getInterpreterMethod(format: Cell["format"]): string {
     case "json":
     case "blob":
     case "text":
+    case "xml":
       return `.${format}()`;
     case "html":
       return `.text().then((text) => html({raw: [text]}))`;
@@ -40,6 +43,7 @@ export function getInterpreterMethod(format: Cell["format"]): string {
     case "jpeg":
     case "png":
     case "gif":
+    case "svg":
     case "webp":
       return ".image()";
     case "csv":
