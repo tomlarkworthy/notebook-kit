@@ -1,8 +1,6 @@
 import {Parser, tokTypes} from "acorn";
 import type {Expression, Identifier, Options, Program} from "acorn";
-import {checkExports} from "./imports.js";
 import {findReferences} from "./references.js";
-import {checkAssignments} from "./assignments.js";
 import {findDeclarations} from "./declarations.js";
 import {findAwaits} from "./awaits.js";
 
@@ -20,9 +18,7 @@ export interface JavaScriptCell {
   async: boolean; // does this use top-level await?
 }
 
-export function maybeParseJavaScript(
-  input: string
-): JavaScriptCell | undefined {
+export function maybeParseJavaScript(input: string): JavaScriptCell | undefined {
   try {
     return parseJavaScript(input);
   } catch (error) {
@@ -36,13 +32,10 @@ export function parseJavaScript(input: string): JavaScriptCell {
   if (expression?.type === "ClassExpression" && expression.id) expression = null; // treat named class as program
   if (expression?.type === "FunctionExpression" && expression.id) expression = null; // treat named function as program
   const body = expression ?? parseProgram(input); // otherwise parse as a program
-  checkExports(body, input);
-  const references = findReferences(body);
-  checkAssignments(body, references, input);
   return {
     body,
     declarations: expression ? null : findDeclarations(body as Program, input),
-    references,
+    references: findReferences(body, {input}),
     expression: !!expression,
     async: findAwaits(body).length > 0
   };

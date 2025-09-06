@@ -1,10 +1,10 @@
 import {assert, test} from "vitest";
-import {checkAssignments} from "./assignments.js";
 import {parseJavaScript} from "./parse.js";
+import {findReferences} from "./references.js";
 
 function check(input: string) {
   const cell = parseJavaScript(input);
-  checkAssignments(cell.body, cell.references, input);
+  findReferences(cell.body, {input});
 }
 
 test("allows non-external assignments", () => {
@@ -35,5 +35,20 @@ test("does not allow external assignments via for…of or for…in", () => {
 });
 
 test("does not allow global assignments", () => {
-  assert.throws(() => check("window = 1;"), /global 'window'/);
+  assert.throws(() => check("window = 1;"), /Assignment to global 'window'/);
+  assert.throws(() => check("const foo = (window = 1);"), /Assignment to global 'window'/);
+});
+
+test("does not allow conflicting top-level variables", () => {
+  assert.throws(() => check("const window = 1;"), /Global 'window' cannot be redefined/);
+  assert.throws(() => check("const foo = 1, window = 2;"), /Global 'window' cannot be redefined/);
+  assert.throws(() => check("const {window} = {};"), /Global 'window' cannot be redefined/);
+  assert.throws(() => check("const {window = 1} = {};"), /Global 'window' cannot be redefined/);
+});
+
+test("allows conflicting non-top-level variables", () => {
+  assert.doesNotThrow(() => check("{ const window = 1; }"));
+  assert.doesNotThrow(() => check("{ let window; window = 2; }"));
+  assert.doesNotThrow(() => check("{ const {window} = {}; }"));
+  assert.doesNotThrow(() => check("{ const {window = 1} = {}; }"));
 });

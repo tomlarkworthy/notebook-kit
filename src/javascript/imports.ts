@@ -14,7 +14,7 @@ type NamedImportSpecifier = ImportSpecifier | ImportDefaultSpecifier;
 type AnyImportSpecifier = ImportSpecifier | ImportDefaultSpecifier | ImportNamespaceSpecifier;
 
 /** Throws a syntax error if any export declarations are found. */
-export function checkExports(body: Node, input: string): void {
+export function checkExports(body: Node, {input}: {input: string}): void {
   function checkExport(child: Node) {
     throw syntaxError("Unexpected token 'export'", child, input);
   }
@@ -164,10 +164,12 @@ function renderImport(source: string, node: ImportDeclaration, input: string): s
       : ""
   })${
     names.length > 0
-      ? `.then((module) => {${names.map(
-          (name) => `
+      ? `.then((module) => {${names
+          .map(
+            (name) => `
   if (!("${name}" in module)) throw new SyntaxError(\`export '${name}' not found\`);`
-        ).join("")}
+          )
+          .join("")}
   return module;
 })`
       : ""
