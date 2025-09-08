@@ -81,11 +81,17 @@ export function transpileTemplate(input: string, tag?: string, raw?: boolean): s
 export function transpileTemplate(cell: Cell): string;
 export function transpileTemplate(input: string | Cell, tag = "", raw = false): string {
   let cell: Cell | undefined;
+  let prefix: string;
+  let suffix: string;
   if (typeof input !== "string") {
     cell = input;
     input = cell.value;
-    tag = getTag(cell);
+    prefix = getPrefix(cell);
+    suffix = getSuffix(cell);
     raw = getRaw(cell);
+  } else {
+    prefix = tag;
+    suffix = "";
   }
   if (!input) return input;
   const source = new Sourcemap(input);
@@ -100,34 +106,33 @@ export function transpileTemplate(input: string | Cell, tag = "", raw = false): 
     (raw ? escapeRawTemplateElements : escapeTemplateElements)(source, template);
     node = template;
   }
-  source.insertLeft(node.start, "`");
-  source.insertRight(node.end, "`");
-  source.insertLeft(node.start, tag);
-  return String(source) + (cell ? getSuffix(cell) : "");
+  source.insertLeft(node.start, `${prefix}\``);
+  source.insertRight(node.end, `\`${suffix}`);
+  return String(source);
 }
 
 function getRaw(cell: Cell): boolean {
   return cell.mode !== "md";
 }
 
-function getTag(cell: Cell): string {
+function getPrefix(cell: Cell): string {
   return cell.mode === "tex"
     ? "tex.block"
     : cell.mode === "sql"
-      ? getSqlTag(cell)
+      ? getSqlPrefix(cell)
       : isInterpreter(cell.mode)
-        ? getInterpreterTag(cell)
+        ? getInterpreterPrefix(cell)
         : cell.mode;
 }
 
-function getSqlTag(cell: Cell): string {
+function getSqlPrefix(cell: Cell): string {
   const {id, database = "var:db", since} = cell;
   return database.startsWith("var:")
     ? `${database.slice("var:".length)}.sql`
     : `DatabaseClient(${JSON.stringify(database)}, {id: ${id}${since === undefined ? "" : `, since: ${JSON.stringify(since)}`}}).sql`;
 }
 
-function getInterpreterTag(cell: Cell): string {
+function getInterpreterPrefix(cell: Cell): string {
   const {id, mode, format, since} = cell;
   return `Interpreter(${JSON.stringify(mode)}, {id: ${id}${format === undefined ? "" : `, format: ${JSON.stringify(format)}`}${since === undefined ? "" : `, since: ${JSON.stringify(since)}`}}).run(`;
 }
@@ -142,7 +147,7 @@ function getSuffix(cell: Cell): string {
 
 function getInterpreterSuffix(cell: Cell): string {
   const method = getInterpreterMethod(cell.format);
-  return method ? `).then((file) => file${method})` : "";
+  return method ? `).then((file) => file${method})` : ")";
 }
 
 function escapeTemplateElements(source: Sourcemap, node: TemplateLiteral): void {
