@@ -6,30 +6,147 @@
 
     <link rel="stylesheet" href="./style.css">
   </script>
-  <script type="text/markdown">
-    Data loaders are special cells that run at build time via an interpreter rather than in the browser at runtime. Data loader cells are useful for preparing static data, ensuring consistency and stability, and greatly improving runtime performance. Think of data loaders as a generalization of [database connectors](./databases) that allow languages besides SQL.
+  <script id="2" type="text/markdown">
+    **Data loaders** are special cells that run "ahead" at build time via an interpreter, rather than "live" when you view a notebook in the browser. Data loaders are useful for preparing static data, ensuring consistency and stability, and improving performance. Think of data loaders as a generalization of [database connectors](./databases) that allow languages besides SQL.
   </script>
-  <script type="text/markdown">
-    For example, here is a Node.js data loader that says hello and reports the current version of Node.js:
+  <script id="7" type="text/markdown">
+    Notebooks currently support Node.js and Python data loaders. We will likely add additional interpreters in the future.
   </script>
-  <script type="application/vnd.node.javascript" format="text" pinned="">
-    process.stdout.write(`Hello from Node ${process.version}!`);
+  <script id="3" type="text/markdown">
+    As an example, here is a trivial Python cell that says hello, and reports the current version of Python:
   </script>
-  <script type="text/markdown">
+  <script id="10" type="text/x-python" pinned="" output="hello" format="text">
+    import platform
+
+    print(f"Hello from Python {platform.python_version()}!", end="")
+  </script>
+  <script id="22" type="text/markdown">
+    The Python cell above uses the text **format**, and hence its value is displayed as a string. The **output** is given the name `hello`, allowing it to be referenced in JavaScript:
+  </script>
+  <script id="23" type="module" pinned="">
+    hello.toUpperCase()
+  </script>
+  <script id="24" type="text/markdown">
+    A variety of formats are supported, including these text-based formats:
+
+    - `text` - a string
+    - `json` - JSON
+    - `csv` - comma-separated values
+    - `tsv` - tab-separated values
+    - `xml` - XML
+
+    And these binary formats:
+
+    - `arrow` - Apache Arrow IPC
+    - `parquet` - Apache Parquet
+    - `blob` - binary data as a `Blob`
+    - `buffer` - binary data as an `ArrayBuffer`
+
+    You can also generate images in `jpeg`, `gif`, `webp`, `png`, and `svg` format. And you can server-side render HTML content using the `html` format.
+  </script>
+  <script id="21" type="text/markdown">
+    As a more realistic example, below is a Node.js data loader cell that fetches download statistics for Observable Plot from npm.
+  </script>
+  <script id="4" type="application/vnd.node.javascript" pinned="" output="downloads" format="json">
+    async function getNpmDownloads(
+      name, // name of package
+      {
+        end: max, // exclusive
+        start: min // inclusive
+      }
+    ) {
+      const data = [];
+      for (let start = max, end; start > min; ) {
+        end = start;
+        start = addDate(start, -365); // fetch a year at a time
+        if (start < min) start = min;
+        const response = await fetch(
+          `https://api.npmjs.org/downloads/range/${formatDate(start)}:${formatDate(addDate(end, -1))}${name ? `/${encodeURIComponent(name)}` : ``}`
+        );
+        if (!response.ok) throw new Error(`fetch failed: ${response.status}`);
+        const {downloads} = await response.json();
+        for (const {downloads: value, day: date} of downloads.reverse()) {
+          data.push({date: new Date(date), value});
+        }
+      }
+      for (let i = data.length - 1; i >= 0; --i) {
+        if (data[i].value > 0) {
+          return data.slice(data[0].value > 0 ? 0 : 1, i + 1); // ignore npm reporting zero for today
+        }
+      }
+      throw new Error("no data found");
+    }
+
+    function formatDate(date) {
+      return date.toISOString().slice(0, 10);
+    }
+
+    function addDate(date, n) {
+      date = new Date(+date);
+      date.setDate(date.getDate() + n);
+      return date;
+    }
+
+    process.stdout.write(
+      JSON.stringify(
+        await getNpmDownloads("@observablehq/plot", {
+          start: new Date("2022-09-01"),
+          end: new Date("2025-09-01")
+        })
+      )
+    );
+  </script>
+  <script id="6" type="text/markdown">
     <aside>The cell above is JavaScript that runs in Node.js, unlike normal JavaScript cells that run in the browser.</aside>
 
-    The output of a data loader cell is automatically saved to a `.observable/cache` directory on your local file system alongside your notebooks.
+    The output of a data loader cell is automatically saved to a `.observable/cache` directory on your local file system alongside your notebooks. Data snapshots are stable --- the data only updates if you re-run the data loader cell. In Observable Desktop, you can re-run a data loader cell by clicking the **Play** button, by hitting <span style="font-family: var(--sans-serif);">**shift-return**</span>, or by clicking on the query age in the cell toolbar. In Notebook Kit, delete the corresponding file from the `.observable/cache` directory; you can also use continuous deployment, such as GitHub Actions, to refresh data automatically.
   </script>
-  <script type="text/markdown">
-    In Observable Desktop, you can re-run a data loader cell by clicking the **Play** button, by hitting <span style="font-family: var(--sans-serif);">**shift-return**</span>, or by clicking on the query age in the cell toolbar. In Notebook Kit, delete the corresponding file from the `.observable/cache` directory; you can also use continuous deployment, such as GitHub Actions, to refresh data automatically.
+  <script id="27" type="text/markdown">
+    The Node.js cell above defines the `downloads` variable, which we use below to render an area chart with Observable Plot:
   </script>
-  <script type="text/markdown">
-    Currently, Notebook Kit only supports the Node.js interpreter for data loader cells, but we plan on adding other interpreters, notably Python and R.
+  <script id="26" type="module" pinned="">
+    Plot.plot({
+      width,
+      x: {type: "utc"},
+      y: {grid: true, label: "downloads"},
+      marks: [
+        Plot.axisY({label: "Downloads per day"}),
+        Plot.areaY(downloads, {x: "date", y: "value", curve: "step"}),
+        Plot.tip(downloads, Plot.pointerX({x: "date", y: "value", tip: true}))
+      ]
+    })
   </script>
-  <script type="text/markdown">
-    To improve security, the Node.js interpreter uses [process-based permissions](https://nodejs.org/api/permissions.html). Node.js cells are only allowed to read files in the same directory as the notebook, with no other permissions. (We may offer a way to relax permissions in the future, but want to encourage safety; let us know if you run into issues.)
+  <script id="28" type="text/markdown">
+    Here's a bit more about data loaders.
   </script>
-  <script type="text/markdown">
+  <script id="17" type="text/markdown">
+    ## Node.js data loaders
+
+    Node.js data loaders require Node.js 22.12+ to be installed in one of the following locations:
+
+    - `/opt/homebrew/bin/node` (Homebrew)
+    - `/opt/local/bin/node` (MacPorts)
+    - `/usr/local/bin/node` (official Node.js installer)
+    - `/usr/bin/node` (operating system)
+  </script>
+  <script id="8" type="text/markdown">
+    To improve security, the Node.js interpreter uses [process-based permissions](https://nodejs.org/api/permissions.html): Node.js cells are only allowed to read files in the same directory as the notebook, with no other permissions. (We may offer a way to relax permissions in the future, but want to encourage safety; let us know if you run into issues.)
+  </script>
+  <script id="9" type="text/markdown">
     Due to the above security restrictions, if you wish to import installed packages, they must be installed within the same directory as the notebook (_e.g._, if your notebook is in `docs`, packages must be installed in `docs/node_modules` with a `docs/package.json`).
+  </script>
+  <script id="18" type="text/markdown">
+    ## Python data loaders
+
+    Python data loaders require Python 3.12+ to be installed in one of the following locations:
+
+    - `.venv/bin/python3` (venv)
+    - `/opt/homebrew/bin/python3` (Homebrew)
+    - `/opt/local/bin/python3` (MacPorts)
+    - `/usr/local/bin/python3` (official Python installer)
+    - `/usr/bin/python3` (operating system)
+  </script>
+  <script id="30" type="text/markdown">
+    If you have a virtual environment (`.venv`) in the same directory as the notebook, it will automatically be used. However, packages are not installed implicitly; you must install packages yourself, typically using `pip`. (And we recommend using `pip freeze` to create a `requirements.txt`.)
   </script>
 </notebook>
