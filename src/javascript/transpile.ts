@@ -1,3 +1,4 @@
+import {ScriptTarget, transpile as transpileTypeScript} from "typescript";
 import type {Cell} from "../lib/notebook.js";
 import {toCell} from "../lib/notebook.js";
 import {rewriteFileExpressions} from "./files.js";
@@ -55,14 +56,16 @@ export function transpile(
     input = cell.value;
   }
   const transpiled =
-    mode === "ojs"
-      ? transpileObservable(input, options)
-      : mode !== "js"
-        ? transpileJavaScript(transpileTemplate(cell), options)
-        : transpileJavaScript(input, options);
+    mode === "ts"
+      ? transpileJavaScript(transpileTypeScript(input, {target: ScriptTarget.ESNext}), options)
+      : mode === "ojs"
+        ? transpileObservable(input, options)
+        : mode !== "js"
+          ? transpileJavaScript(transpileTemplate(cell), options)
+          : transpileJavaScript(input, options);
   if (transpiled.output === undefined) transpiled.output = cell.output;
   if (cell.hidden) transpiled.autodisplay = false;
-  else if (mode !== "js" && mode !== "ojs") {
+  else if (mode !== "js" && mode !== "ts" && mode !== "ojs") {
     transpiled.autodisplay = !!input;
     transpiled.autoview = mode === "sql" && transpiled.autodisplay && !!transpiled.output;
     if (transpiled.autoview) transpiled.output = `viewof$${transpiled.output}`;

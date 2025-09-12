@@ -113,6 +113,7 @@
     The `type` attribute can have one of the following values:
 
     - `module` - JavaScript
+    - `text/x-typescript` - TypeScript
     - `text/markdown` - Markdown
     - `text/html` - HTML
     - `application/sql` - SQL
@@ -128,6 +129,15 @@
     ```html
     <script type="module">
       1 + 2
+    <\/script>
+    ```
+  </script>
+  <script id="86" type="text/markdown">
+    A TypeScript (`text/x-typescript`) cell:
+
+    ```html
+    <script type="text/x-typescript">
+      let hello: string = "hello";
     <\/script>
     ```
   </script>
