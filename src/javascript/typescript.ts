@@ -16,16 +16,16 @@ const compilerOptions = {
 } as const;
 
 export function transpileTypeScript(input: string): string {
-  const expr = asExpression(input);
+  const expr = maybeExpression(input);
   if (expr) return trimTrailingSemicolon(transpile(expr, compilerOptions));
   parseTypeScript(input); // enforce valid syntax
   return transpile(input, compilerOptions);
 }
 
 /** If the given is an expression (not a statement), returns it with parens. */
-function asExpression(input: string): string | undefined {
-  if (hasUnmatchedParens(input)) return; // disallow funny business
-  const expr = `(${trim(input)})`;
+function maybeExpression(input: string): string | undefined {
+  if (!hasMatchedParens(input)) return; // disallow funny business
+  const expr = withParens(input);
   if (!isSolitaryExpression(expr)) return;
   return expr;
 }
@@ -81,25 +81,25 @@ function* tokenize(input: string): Generator<Token> {
   }
 }
 
-/** Returns true if the specified input has mismatched parens. */
-function hasUnmatchedParens(input: string): boolean {
+/** Returns true if the specified input has matched parens. */
+function hasMatchedParens(input: string): boolean {
   let depth = 0;
   for (const t of tokenize(input)) {
     if (t.type === tokTypes.parenL) ++depth;
-    else if (t.type === tokTypes.parenR && --depth < 0) return true;
+    else if (t.type === tokTypes.parenR && --depth < 0) return false;
   }
-  return false;
+  return depth === 0;
 }
 
-/** Removes leading and trailing whitespace around the specified input. */
-function trim(input: string): string {
+/** Wraps the specified input with parentheses. */
+function withParens(input: string): string {
   let start;
   let end;
   for (const t of tokenize(input)) {
     start ??= t;
     end = t;
   }
-  return input.slice(start?.start, end?.end);
+  return `(${input.slice(start?.start, end?.end)})`;
 }
 
 /** Removes a trailing semicolon, if present. */
