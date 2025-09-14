@@ -48,21 +48,13 @@
     As a more realistic example, below is a Node.js data loader cell that fetches download statistics for Observable Plot from npm.
   </script>
   <script id="4" type="application/vnd.node.javascript" pinned="" output="downloads" format="json">
-    async function getNpmDownloads(
-      name, // name of package
-      {
-        end: max, // exclusive
-        start: min // inclusive
-      }
-    ) {
+    async function getNpmDownloads(name, {end, start}) {
       const data = [];
-      for (let start = max, end; start > min; ) {
-        end = start;
-        start = addDate(start, -365); // fetch a year at a time
-        if (start < min) start = min;
-        const response = await fetch(
-          `https://api.npmjs.org/downloads/range/${formatDate(start)}:${formatDate(addDate(end, -1))}${name ? `/${encodeURIComponent(name)}` : ``}`
-        );
+      for (let d1 = end, d2; d1 > start; ) {
+        d2 = d1;
+        d1 = addDate(d1, -365); // fetch a year at a time
+        if (d1 < start) d1 = start;
+        const response = await fetch(`https://api.npmjs.org/downloads/range/${formatDate(d1)}:${formatDate(addDate(d2, -1))}/${encodeURIComponent(name)}`);
         if (!response.ok) throw new Error(`fetch failed: ${response.status}`);
         const {downloads} = await response.json();
         for (const {downloads: value, day: date} of downloads.reverse()) {
@@ -128,6 +120,9 @@
     - `/opt/local/bin/node` (MacPorts)
     - `/usr/local/bin/node` (official Node.js installer)
     - `/usr/bin/node` (operating system)
+  </script>
+  <script id="31" type="text/markdown">
+    TypeScript is supported via Node.js' built-in [type stripping](https://nodejs.org/api/typescript.html#type-stripping). Hence, no type checking is performed, and only erasable TypeScript syntax is supported (for example, `enum` declarations are not allowed).
   </script>
   <script id="8" type="text/markdown">
     To improve security, the Node.js interpreter uses [process-based permissions](https://nodejs.org/api/permissions.html): Node.js cells are only allowed to read files in the same directory as the notebook, with no other permissions. (We may offer a way to relax permissions in the future, but want to encourage safety; let us know if you run into issues.)

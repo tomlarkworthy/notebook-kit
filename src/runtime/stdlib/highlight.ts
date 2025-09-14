@@ -54,6 +54,11 @@ export async function highlight(code: HTMLElement): Promise<void> {
 
 async function getParser(language: string): Promise<Parser | undefined> {
   switch (language) {
+    case "node":
+      language = "ts";
+      break;
+  }
+  switch (language) {
     case "js":
     case "ts":
     case "jsx":
@@ -75,7 +80,6 @@ function getLanguage(code: HTMLElement): string | undefined {
     ?.slice("language-".length)
     ?.toLowerCase();
   switch (language) {
-    case "node":
     case "javascript":
       return "js";
     case "typescript":

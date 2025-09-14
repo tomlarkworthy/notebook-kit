@@ -17,7 +17,7 @@ export async function getInterpreterCachePath(
 export function getInterpreterCommand(interpreter: string): [command: string, args: string[]] {
   switch (interpreter) {
     case "node":
-      return ["node", ["--input-type=module", "--permission", "--allow-fs-read=."]];
+      return ["node", ["--input-type=module-typescript", "--permission", "--allow-fs-read=."]];
     case "python":
       return ["python3", []];
     default:
