@@ -1,4 +1,3 @@
-import {ScriptTarget, transpile as transpileTypeScript} from "typescript";
 import type {Cell} from "../lib/notebook.js";
 import {toCell} from "../lib/notebook.js";
 import {rewriteFileExpressions} from "./files.js";
@@ -8,6 +7,7 @@ import {transpileObservable} from "./observable.js";
 import {parseJavaScript} from "./parse.js";
 import {Sourcemap} from "./sourcemap.js";
 import {transpileTemplate} from "./template.js";
+import {transpileTypeScript} from "./typescript.js";
 
 export type TranspiledJavaScript = {
   /** the source code of a JavaScript function defining the primary variable */
@@ -57,7 +57,7 @@ export function transpile(
   }
   const transpiled =
     mode === "ts"
-      ? transpileJavaScript(transpileTypeScript(input, {target: ScriptTarget.ESNext}), options)
+      ? transpileJavaScript(transpileTypeScript(input), options)
       : mode === "ojs"
         ? transpileObservable(input, options)
         : mode !== "js"
