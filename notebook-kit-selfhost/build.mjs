@@ -1,23 +1,27 @@
 import * as esbuild from 'esbuild';
 import { fileURLToPath } from 'url';
 import { dirname, join } from 'path';
+import { writeFileSync } from 'fs'; // Import writeFileSync
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
-await esbuild.build({
+const result = await esbuild.build({ // Capture the result
   entryPoints: [join(__dirname, 'src', 'main.js')],
   bundle: true,
   outfile: join(__dirname, 'dist', 'bundle.js'),
   format: 'esm',
   platform: 'browser',
+  metafile: true, // Generate metafile for bundle analysis
+  minify: true, // Minify the bundle
   external: [
     'node:child_process', 'node:fs', 'node:fs/promises', 'node:path', 'node:url', 'node:util',
     'node:stream/consumers', 'node:stream', 'node:events', 'node:process',
     'path', 'fs', 'os', 'stream', 'net', 'tls', 'crypto', 'vm', 'http', 'querystring', 'assert', 'perf_hooks',
     'bun:sqlite', 'node:sqlite', 'zlib',
     'jsdom', // Exclude jsdom as we use native DOMParser in browser
-    '@databricks/sql', '@duckdb/node-api', '@google-cloud/bigquery', 'postgres', 'snowflake-sdk' // Exclude database connectors
+    '@databricks/sql', '@duckdb/node-api', '@google-cloud/bigquery', 'postgres', 'snowflake-sdk', // Exclude database connectors
+    'typescript' // Exclude typescript compiler
   ],
   plugins: [
     {
@@ -39,6 +43,8 @@ await esbuild.build({
         build.onResolve({ filter: /^node:util$/ }, () => ({ path: join(__dirname, 'shims', 'util.js') }));
         // Shim for jsdom
         build.onResolve({ filter: /^jsdom$/ }, () => ({ path: join(__dirname, 'shims', 'jsdom.js') }));
+        // Shim for typescript
+        build.onResolve({ filter: /^typescript$/ }, () => ({ path: join(__dirname, 'shims', 'typescript.js') }));
         // Additional shims for non-node: prefixed modules
         build.onResolve({ filter: /^path$/ }, () => ({ path: join(__dirname, 'shims', 'path.js') }));
         build.onResolve({ filter: /^fs$/ }, () => ({ path: join(__dirname, 'shims', 'fs.js') }));
@@ -61,5 +67,7 @@ await esbuild.build({
     },
   ],
 });
+
+writeFileSync(join(__dirname, 'dist', 'meta.json'), JSON.stringify(result.metafile));
 
 console.log('Build complete!');
