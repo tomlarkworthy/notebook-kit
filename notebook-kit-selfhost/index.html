@@ -18,16 +18,15 @@
 <!DOCTYPE html>
 <meta charset="utf-8">
 <title>Hello, World!</title>
-<link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/@observablehq/inspector@6/dist/inspector.css">
-<body>
+<notebook>
 <script type="module">
-
-import {Runtime, Inspector} from "https://cdn.jsdelivr.net/npm/@observablehq/runtime@5/dist/runtime.js";
-import define from "https://api.observablehq.com/d/e222962522222222@123.js?v=3";
-
-new Runtime().module(define, Inspector.into(document.body));
-
+const a = 1;
 </script>
+<script type="module">
+// A simple cell that displays a value
+display(a);
+</script>
+</notebook>
     </textarea>
     <button id="renderButton">Render Notebook</button>
     <div id="output"></div>

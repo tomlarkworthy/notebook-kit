@@ -16,17 +16,18 @@ const observablePlugin = observable({
   // We'll override transformTemplate to simply return the input,
   // as we're providing the full HTML to the transform function.
   transformTemplate: async (source, context) => {
-    // In a browser context, we don't have access to the file system to read a template.
-    // The input 'source' here would be the content of the dummyTemplatePath,
-    // which we don't actually use. We need to ensure the transformIndexHtml
-    // handler gets the actual notebook HTML.
-    // For now, we'll return a minimal valid HTML structure.
+    // Return a minimal valid HTML structure as the base template.
+    // The notebook content will be deserialized from context.html and appended to this.
     return `<!DOCTYPE html><html><head><title></title></head><body><main></main></body></html>`;
   },
   transformNotebook: async (notebook, context) => {
+    console.log('transformNotebook: Initial notebook object:', notebook);
     // The original observable plugin expects a file path for context.filename.
     // We'll provide a dummy path for now.
     context.filename = '/notebook.html';
+    // Ensure a default theme is set, as it's used in the CSS import.
+    notebook.theme = notebook.theme || 'air';
+    console.log('transformNotebook: Modified notebook object:', notebook);
     return notebook;
   }
 });
@@ -40,12 +41,17 @@ window.processNotebookHtml = async (htmlContent) => {
       hot: {
         send: () => {} // No-op for HMR in self-hosted context
       }
-    }
+    },
+    html: htmlContent // Pass the original HTML content in context for transformTemplate
   };
+
+  // Log the input HTML content before deserialization
+  console.log('processNotebookHtml: Input HTML content:', htmlContent);
 
   // The transformIndexHtml handler expects the raw HTML input.
   // We need to call the handler directly.
   let transformedHtml = await observablePlugin.transformIndexHtml.handler(htmlContent, context);
+  console.log('processNotebookHtml: Transformed HTML:', transformedHtml);
 
   // Replace observable: URLs with paths to node_modules
   transformedHtml = transformedHtml.replace(/observable:runtime/g, './node_modules/@observablehq/notebook-kit/dist/src/runtime/index.js');
@@ -57,6 +63,7 @@ window.processNotebookHtml = async (htmlContent) => {
     imports: {
       "@observablehq/runtime": "./node_modules/@observablehq/runtime/src/index.js",
       "@observablehq/inspector": "./node_modules/@observablehq/inspector/src/index.js",
+      "isoformat": "./node_modules/isoformat/src/index.js"
       // Add other @observablehq modules if they appear as bare specifiers
       // For example, if you see "@observablehq/parser", add it here:
       // "@observablehq/parser": "./node_modules/@observablehq/parser/dist/parser.js"
@@ -69,3 +76,4 @@ window.processNotebookHtml = async (htmlContent) => {
 };
 
 console.log('Notebook Kit self-hosting module loaded.');
+console.log('window.processNotebookHtml is now available:', typeof window.processNotebookHtml);
