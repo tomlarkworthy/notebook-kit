@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Notebook Kit Self-Host</title>
+    <style>
+        body { font-family: sans-serif; margin: 20px; }
+        textarea { width: 80%; height: 200px; margin-bottom: 10px; }
+        button { padding: 10px 20px; cursor: pointer; }
+        #output { border: 1px solid #ccc; padding: 10px; margin-top: 20px; min-height: 300px; }
+    </style>
+</head>
+<body>
+    <h1>Notebook Kit Self-Host</h1>
+    <p>Paste your notebook HTML below and click "Render Notebook".</p>
+    <textarea id="notebookInput">
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>Hello, World!</title>
+<link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/@observablehq/inspector@6/dist/inspector.css">
+<body>
+<script type="module">
+
+import {Runtime, Inspector} from "https://cdn.jsdelivr.net/npm/@observablehq/runtime@5/dist/runtime.js";
+import define from "https://api.observablehq.com/d/e222962522222222@123.js?v=3";
+
+new Runtime().module(define, Inspector.into(document.body));
+
+</script>
+    </textarea>
+    <button id="renderButton">Render Notebook</button>
+    <div id="output"></div>
+
+    <script type="module" src="./dist/bundle.js"></script>
+    <script type="module">
+        document.getElementById('renderButton').addEventListener('click', async () => {
+            const inputHtml = document.getElementById('notebookInput').value;
+            const outputDiv = document.getElementById('output');
+            outputDiv.innerHTML = 'Rendering...';
+
+            try {
+                // Assuming window.processNotebookHtml is exposed by our bundle.
+                const transformedHtml = await window.processNotebookHtml(inputHtml);
+                
+                // To execute the scripts in the transformed HTML, we need to
+                // create a new iframe and load the content into it.
+                const iframe = document.createElement('iframe');
+                iframe.style.width = '100%';
+                iframe.style.height = '100%';
+                iframe.style.border = 'none';
+                outputDiv.innerHTML = ''; // Clear "Rendering..."
+                outputDiv.appendChild(iframe);
+
+                iframe.contentWindow.document.open();
+                iframe.contentWindow.document.write(transformedHtml);
+                iframe.contentWindow.document.close();
+
+            } catch (error) {
+                outputDiv.innerHTML = `<pre style="color: red;">Error: ${error.message}</pre>`;
+                console.error('Error rendering notebook:', error);
+            }
+        });
+    </script>
+</body>
+</html>
