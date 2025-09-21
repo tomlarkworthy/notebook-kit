@@ -31,10 +31,14 @@ await esbuild.build({
         build.onResolve({ filter: /^node:fs\/promises$/ }, () => ({ path: join(__dirname, 'shims', 'fs_promises.js') }));
         // Shim for node:path
         build.onResolve({ filter: /^node:path$/ }, () => ({ path: join(__dirname, 'shims', 'path.js') }));
+        // Shim for node:path/posix
+        build.onResolve({ filter: /^node:path\/posix$/ }, () => ({ path: join(__dirname, 'shims', 'path.js') }));
         // Shim for node:url
         build.onResolve({ filter: /^node:url$/ }, () => ({ path: join(__dirname, 'shims', 'url.js') }));
         // Shim for node:util
         build.onResolve({ filter: /^node:util$/ }, () => ({ path: join(__dirname, 'shims', 'util.js') }));
+        // Shim for jsdom
+        build.onResolve({ filter: /^jsdom$/ }, () => ({ path: join(__dirname, 'shims', 'jsdom.js') }));
         // Additional shims for non-node: prefixed modules
         build.onResolve({ filter: /^path$/ }, () => ({ path: join(__dirname, 'shims', 'path.js') }));
         build.onResolve({ filter: /^fs$/ }, () => ({ path: join(__dirname, 'shims', 'fs.js') }));
