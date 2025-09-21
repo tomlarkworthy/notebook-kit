@@ -8,7 +8,7 @@ const browserDOMParser = new DOMParser();
 // scenario, we'll provide the template content directly.
 // For now, we'll use a dummy template path, as the transformIndexHtml handler
 // will receive the input HTML directly.
-const dummyTemplatePath = '/dev/null';
+const dummyTemplatePath = 'observablehq/templates/default.html';
 
 const observablePlugin = observable({
   parser: browserDOMParser,
