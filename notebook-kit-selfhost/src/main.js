@@ -45,7 +45,26 @@ window.processNotebookHtml = async (htmlContent) => {
 
   // The transformIndexHtml handler expects the raw HTML input.
   // We need to call the handler directly.
-  const transformedHtml = await observablePlugin.transformIndexHtml.handler(htmlContent, context);
+  let transformedHtml = await observablePlugin.transformIndexHtml.handler(htmlContent, context);
+
+  // Replace observable: URLs with paths to node_modules
+  transformedHtml = transformedHtml.replace(/observable:runtime/g, './node_modules/@observablehq/notebook-kit/dist/src/runtime/index.js');
+  transformedHtml = transformedHtml.replace(/observable:styles\/theme-(\w+)\.css/g, './node_modules/@observablehq/notebook-kit/dist/src/styles/theme-$1.css');
+  transformedHtml = transformedHtml.replace(/observable:styles\/(global\.css|inspector\.css|highlight\.css|plot\.css|index\.css|syntax-dark\.css|syntax-light\.css|abstract-dark\.css|abstract-light\.css)/g, './node_modules/@observablehq/notebook-kit/dist/src/styles/$1');
+
+  // Inject import map for bare module specifiers
+  const importMap = {
+    imports: {
+      "@observablehq/runtime": "./node_modules/@observablehq/runtime/src/index.js",
+      "@observablehq/inspector": "./node_modules/@observablehq/inspector/src/index.js",
+      // Add other @observablehq modules if they appear as bare specifiers
+      // For example, if you see "@observablehq/parser", add it here:
+      // "@observablehq/parser": "./node_modules/@observablehq/parser/dist/parser.js"
+    }
+  };
+  const importMapScript = `<script type="importmap">${JSON.stringify(importMap, null, 2)}</script>`;
+  transformedHtml = transformedHtml.replace(/<head>/, `<head>\n${importMapScript}`);
+
   return transformedHtml;
 };
 
