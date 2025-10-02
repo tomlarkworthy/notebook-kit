@@ -15,17 +15,14 @@
     <h1>Notebook Kit Self-Host</h1>
     <p>Paste your notebook HTML below and click "Render Notebook".</p>
     <textarea id="notebookInput">
-<!DOCTYPE html>
-<meta charset="utf-8">
-<title>Hello, World!</title>
 <notebook>
-<script type="module">
-const a = 1;
-</script>
-<script type="module">
-// A simple cell that displays a value
-display(a);
-</script>
+    <script type="module">
+    const a = 1;
+    </script>
+    <script type="module">
+    // A simple cell that displays a value
+    display(a);
+    </script>
 </notebook>
     </textarea>
     <button id="renderButton">Render Notebook</button>
