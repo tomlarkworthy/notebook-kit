@@ -25,6 +25,12 @@ const result = await esbuild.build({ // Capture the result
   ],
   plugins: [
     {
+      name: 'acorn-resolver',
+      setup(build) {
+        build.onResolve({ filter: /^acorn$/ }, () => ({ path: join(__dirname, '..', 'node_modules', 'acorn', 'dist', 'acorn.mjs') }));
+      },
+    },
+    {
       name: 'node-shims',
       setup(build) {
         // Shim for node:child_process

@@ -1,79 +1,20 @@
 import { observable } from '@observablehq/notebook-kit/vite';
+import { serialize, deserialize } from '../../src/lib/serialize.js';
+import { maybeParseJavaScript, parseJavaScript } from '../../src/javascript/parse.js';
+import { parseTemplate, transpileTemplate } from '../../src/javascript/template.js';
+import { transpile, transpileJavaScript } from '../../src/javascript/transpile.js';
+import { toNotebook, toCell, defaultPinned } from '../../src/lib/notebook.js';
 
-// We need to provide a DOMParser instance for the observable plugin.
-// In a browser environment, we can use the native DOMParser.
-const browserDOMParser = new DOMParser();
-
-// The observable plugin expects a template path, but in our self-hosting
-// scenario, we'll provide the template content directly.
-// For now, we'll use a dummy template path, as the transformIndexHtml handler
-// will receive the input HTML directly.
-const dummyTemplatePath = 'observablehq/templates/default.html';
-
-const observablePlugin = observable({
-  parser: browserDOMParser,
-  template: dummyTemplatePath,
-  // We'll override transformTemplate to simply return the input,
-  // as we're providing the full HTML to the transform function.
-  transformTemplate: async (source, context) => {
-    // Return a minimal valid HTML structure as the base template.
-    // The notebook content will be deserialized from context.html and appended to this.
-    return `<!DOCTYPE html><html><head><title></title></head><body><main></main></body></html>`;
-  },
-  transformNotebook: async (notebook, context) => {
-    console.log('transformNotebook: Initial notebook object:', notebook);
-    // The original observable plugin expects a file path for context.filename.
-    // We'll provide a dummy path for now.
-    context.filename = '/notebook.html';
-    // Ensure a default theme is set, as it's used in the CSS import.
-    notebook.theme = notebook.theme || 'air';
-    console.log('transformNotebook: Modified notebook object:', notebook);
-    return notebook;
-  }
-});
-
-// Expose a function to process notebook HTML
-window.processNotebookHtml = async (htmlContent) => {
-  const context = {
-    path: '/notebook.html', // Dummy path for context
-    filename: '/notebook.html', // Dummy filename for context
-    server: {
-      hot: {
-        send: () => {} // No-op for HMR in self-hosted context
-      }
-    },
-    html: htmlContent // Pass the original HTML content in context for transformTemplate
-  };
-
-  // Log the input HTML content before deserialization
-  console.log('processNotebookHtml: Input HTML content:', htmlContent);
-
-  // The transformIndexHtml handler expects the raw HTML input.
-  // We need to call the handler directly.
-  let transformedHtml = await observablePlugin.transformIndexHtml.handler(htmlContent, context);
-  console.log('processNotebookHtml: Transformed HTML:', transformedHtml);
-
-  // Replace observable: URLs with paths to node_modules
-  transformedHtml = transformedHtml.replace(/observable:runtime/g, './node_modules/@observablehq/notebook-kit/dist/src/runtime/index.js');
-  transformedHtml = transformedHtml.replace(/observable:styles\/theme-(\w+)\.css/g, './node_modules/@observablehq/notebook-kit/dist/src/styles/theme-$1.css');
-  transformedHtml = transformedHtml.replace(/observable:styles\/(global\.css|inspector\.css|highlight\.css|plot\.css|index\.css|syntax-dark\.css|syntax-light\.css|abstract-dark\.css|abstract-light\.css)/g, './node_modules/@observablehq/notebook-kit/dist/src/styles/$1');
-
-  // Inject import map for bare module specifiers
-  const importMap = {
-    imports: {
-      "@observablehq/runtime": "./node_modules/@observablehq/runtime/src/index.js",
-      "@observablehq/inspector": "./node_modules/@observablehq/inspector/src/index.js",
-      "isoformat": "./node_modules/isoformat/src/index.js"
-      // Add other @observablehq modules if they appear as bare specifiers
-      // For example, if you see "@observablehq/parser", add it here:
-      // "@observablehq/parser": "./node_modules/@observablehq/parser/dist/parser.js"
-    }
-  };
-  const importMapScript = `<script type="importmap">${JSON.stringify(importMap, null, 2)}</script>`;
-  transformedHtml = transformedHtml.replace(/<head>/, `<head>\n${importMapScript}`);
-
-  return transformedHtml;
-};
-
-console.log('Notebook Kit self-hosting module loaded.');
-console.log('window.processNotebookHtml is now available:', typeof window.processNotebookHtml);
+export {
+  serialize,
+  deserialize,
+  maybeParseJavaScript,
+  parseJavaScript,
+  parseTemplate,
+  transpileTemplate,
+  transpile,
+  transpileJavaScript,
+  toNotebook,
+  toCell,
+  defaultPinned
+}
