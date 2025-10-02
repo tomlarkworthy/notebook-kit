@@ -1,4 +1,3 @@
-import { observable } from '@observablehq/notebook-kit/vite';
 import { serialize, deserialize } from '../../src/lib/serialize.js';
 import { maybeParseJavaScript, parseJavaScript } from '../../src/javascript/parse.js';
 import { parseTemplate, transpileTemplate } from '../../src/javascript/template.js';
