@@ -9,11 +9,11 @@ const __dirname = dirname(__filename);
 const result = await esbuild.build({ // Capture the result
   entryPoints: [join(__dirname, 'src', 'main.js')],
   bundle: true,
-  outfile: join(__dirname, 'dist', 'bundle.js'),
+  outfile: join(__dirname, 'dist', 'notebook-kit-browser.js'),
   format: 'esm',
   platform: 'browser',
   metafile: true, // Generate metafile for bundle analysis
-  minify: true, // Minify the bundle
+  minify: false, // Minify the bundle
   external: [
     'node:child_process', 'node:fs', 'node:fs/promises', 'node:path', 'node:url', 'node:util',
     'node:stream/consumers', 'node:stream', 'node:events', 'node:process',
