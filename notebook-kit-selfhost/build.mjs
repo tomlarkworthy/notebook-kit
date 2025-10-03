@@ -13,7 +13,7 @@ const result = await esbuild.build({ // Capture the result
   format: 'esm',
   platform: 'browser',
   metafile: true, // Generate metafile for bundle analysis
-  minify: false, // Minify the bundle
+  minify: true, // Minify the bundle
   external: [
     'node:child_process', 'node:fs', 'node:fs/promises', 'node:path', 'node:url', 'node:util',
     'node:stream/consumers', 'node:stream', 'node:events', 'node:process',
