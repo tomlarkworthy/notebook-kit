@@ -61,7 +61,7 @@ export function isImportMetaUrl(node: MemberExpression): boolean {
   );
 }
 
-function resolveImport(specifier: string): string {
+export function resolveImport(specifier: string): string {
   return resolveObservableImport(resolveJsrImport(resolveNpmImport(specifier)));
 }
 
