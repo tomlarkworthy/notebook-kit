@@ -71,6 +71,8 @@ function serializeMode(mode: Cell["mode"]): string {
       return "application/vnd.node.javascript";
     case "python":
       return "text/x-python";
+    case "r":
+      return "text/x-r";
     case "ojs":
       return "application/vnd.observable.javascript";
     case "ts":
@@ -96,6 +98,8 @@ function deserializeMode(mode: string | null): Cell["mode"] {
       return "node";
     case "text/x-python":
       return "python";
+    case "text/x-r":
+      return "r";
     case "application/vnd.observable.javascript":
       return "ojs";
     case "text/x-typescript":

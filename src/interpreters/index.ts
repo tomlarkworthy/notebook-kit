@@ -20,6 +20,8 @@ export function getInterpreterCommand(interpreter: string): [command: string, ar
       return ["node", ["--input-type=module-typescript", "--permission", "--allow-fs-read=."]];
     case "python":
       return ["python3", []];
+    case "r":
+      return ["Rscript", ["-"]];
     default:
       throw new Error(`unknown interpreter: ${interpreter}`);
   }

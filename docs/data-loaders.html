@@ -10,7 +10,7 @@
     **Data loaders** are special cells that run "ahead" at build time via an interpreter, rather than "live" when you view a notebook in the browser. Data loaders are useful for preparing static data, ensuring consistency and stability, and improving performance. Think of data loaders as a generalization of [database connectors](./databases) that allow languages besides SQL.
   </script>
   <script id="7" type="text/markdown">
-    Notebooks currently support Node.js and Python data loaders. We will likely add additional interpreters in the future.
+    Notebooks currently support Node.js, Python, and R data loaders. We will likely add additional interpreters in the future.
   </script>
   <script id="3" type="text/markdown">
     As an example, here is a trivial Python cell that says hello, and reports the current version of Python:
@@ -143,5 +143,16 @@
   </script>
   <script id="30" type="text/markdown">
     If you have a virtual environment (`.venv`) in the same directory as the notebook, it will automatically be used. However, packages are not installed implicitly; you must install packages yourself, typically using `pip`. (And we recommend using `pip freeze` to create a `requirements.txt`.)
+  </script>
+  <script id="31" type="text/markdown">
+    ## R data loaders
+
+    R data loaders require R to be installed in one of the following locations:
+
+    - `/opt/homebrew/bin/Rscript` (Homebrew)
+    - `/opt/local/bin/Rscript` (MacPorts)
+    - `/Library/Frameworks/R.framework/Resources/bin/Rscript` (official R installer)
+    - `/usr/local/bin/Rscript` (official R installer)
+    - `/usr/bin/Rscript` (operating system)
   </script>
 </notebook>
