@@ -19,7 +19,7 @@ export default function duckdb({path, options}: DuckDBConfig): QueryTemplateFunc
     let rows: Record<string, Json>[];
     try {
       result = await connection.run(
-        strings.reduce((p, c, i) => `${p}$${i - 1}${c}`),
+        strings.reduce((p, c, i) => `${p}$${i}${c}`),
         params
       );
       rows = await result.getRowObjectsJson();
