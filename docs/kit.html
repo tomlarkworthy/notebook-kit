@@ -106,7 +106,8 @@
     - `pinned` - if present, show the cell's source code
     - `hidden` - if present, suppress the cell's implicit display
     - `output` - for non-JavaScript cells, how to expose the value
-    - `database` - for SQL cells, which database to query
+    - `database` - for [SQL cells](./databases), which database to query
+    - `format` - for [data loader cells](./data-loaders), the output format
     - `id` - the cell identifier, for stable editing (optional)
   </script>
   <script id="49" type="text/markdown">
@@ -120,6 +121,9 @@
     - `application/x-tex` - ${tex`\TeX`}
     - `text/vnd.graphviz` - DOT (Graphviz)
     - `application/vnd.observable.javascript` - Observable JavaScript
+    - `application/vnd.node.javascript` - Node.js
+    - `text/x-python` - Python
+    - `text/x-r` - R
 
     Here's an example of each supported cell type.
   </script>
@@ -195,6 +199,35 @@
     ```html
     <script type="application/vnd.observable.javascript">
       foo = 42
+    <\/script>
+    ```
+  </script>
+  <script id="87" type="text/markdown">
+    A Node.js (`application/vnd.node.javascript`) data loader cell:
+
+    ```html
+    <script type="application/vnd.node.javascript">
+      process.stdout.write("hello world");
+    <\/script>
+    ```
+  </script>
+  <script id="89" type="text/markdown">
+    A Python (`text/x-python`) data loader cell:
+
+    ```html
+    <script type="text/x-python">
+      import sys
+
+      sys.stdout.write("hello world")
+    <\/script>
+    ```
+  </script>
+  <script id="91" type="text/markdown">
+    An R (`text/x-r`) data loader cell:
+
+    ```html
+    <script type="text/r">
+      cat("hello world")
     <\/script>
     ```
   </script>
