@@ -114,12 +114,12 @@
   <script id="17" type="text/markdown">
     ## Node.js data loaders
 
-    Node.js data loaders require Node.js 22.12+ to be installed in one of the following locations:
+    Node.js data loaders require Node.js 22.12+ and `node` to be installed in one of the following locations:
 
-    - `/opt/homebrew/bin/node` (Homebrew)
-    - `/opt/local/bin/node` (MacPorts)
-    - `/usr/local/bin/node` (official Node.js installer)
-    - `/usr/bin/node` (operating system)
+    - `/opt/homebrew/bin` (Homebrew)
+    - `/opt/local/bin` (MacPorts)
+    - `/usr/local/bin` (official Node.js installer)
+    - `/usr/bin` (operating system)
   </script>
   <script id="31" type="text/markdown">
     TypeScript is supported via Node.js' built-in [type stripping](https://nodejs.org/api/typescript.html#type-stripping). Hence, no type checking is performed, and only erasable TypeScript syntax is supported (for example, `enum` declarations are not allowed).
@@ -133,13 +133,13 @@
   <script id="18" type="text/markdown">
     ## Python data loaders
 
-    Python data loaders require Python 3.12+ to be installed in one of the following locations:
+    Python data loaders require Python 3.12+ and `python3` to be installed in one of the following locations:
 
-    - `.venv/bin/python3` (venv)
-    - `/opt/homebrew/bin/python3` (Homebrew)
-    - `/opt/local/bin/python3` (MacPorts)
-    - `/usr/local/bin/python3` (official Python installer)
-    - `/usr/bin/python3` (operating system)
+    - `.venv/bin` (venv)
+    - `/opt/homebrew/bin` (Homebrew)
+    - `/opt/local/bin` (MacPorts)
+    - `/usr/local/bin` (official Python installer)
+    - `/usr/bin` (operating system)
   </script>
   <script id="30" type="text/markdown">
     If you have a virtual environment (`.venv`) in the same directory as the notebook, it will automatically be used. However, packages are not installed implicitly; you must install packages yourself, typically using `pip`. (And we recommend using `pip freeze` to create a `requirements.txt`.)
@@ -147,12 +147,12 @@
   <script id="31" type="text/markdown">
     ## R data loaders
 
-    R data loaders require R to be installed in one of the following locations:
+    R data loaders require `Rscript` to be installed in one of the following locations:
 
-    - `/opt/homebrew/bin/Rscript` (Homebrew)
-    - `/opt/local/bin/Rscript` (MacPorts)
-    - `/Library/Frameworks/R.framework/Resources/bin/Rscript` (official R installer)
-    - `/usr/local/bin/Rscript` (official R installer)
-    - `/usr/bin/Rscript` (operating system)
+    - `/opt/homebrew/bin` (Homebrew)
+    - `/opt/local/bin` (MacPorts)
+    - `/Library/Frameworks/R.framework/Resources/bin` (official R installer)
+    - `/usr/local/bin` (official R installer)
+    - `/usr/bin` (operating system)
   </script>
 </notebook>
