@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import katex from "npm:katex";
+import katex from "https://cdn.jsdelivr.net/npm/katex/+esm";
 import type {RawTemplateRenderer} from "./template.js";
 
 const link = document.createElement("link");

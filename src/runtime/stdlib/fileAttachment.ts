@@ -124,7 +124,7 @@ export abstract class AbstractFile implements FileAttachment {
     return (await fetchFile(this)).body!;
   }
   async dsv({delimiter = ",", array = false, typed = false} = {}): Promise<DsvResult> {
-    const [text, d3] = await Promise.all([this.text(), import("npm:d3-dsv")]);
+    const [text, d3] = await Promise.all([this.text(), import("https://cdn.jsdelivr.net/npm/d3-dsv/+esm")]); // prettier-ignore
     const format = d3.dsvFormat(delimiter);
     const parse = array ? format.parseRows : format.parse;
     return parse(text, typed && d3.autoType);
@@ -147,18 +147,17 @@ export abstract class AbstractFile implements FileAttachment {
     });
   }
   async arrow(): Promise<any> {
-    const [Arrow, response] = await Promise.all([import("npm:apache-arrow"), fetchFile(this)]);
+    const [Arrow, response] = await Promise.all([import("https://cdn.jsdelivr.net/npm/apache-arrow@17.0.0/+esm"), fetchFile(this)]); // prettier-ignore
     return Arrow.tableFromIPC(response);
   }
   async arquero(options?: any): Promise<any> {
-    let request;
-    let from;
+    let request: Promise<unknown>;
+    let from: string;
     switch (this.mimeType) {
       case "application/json":
         request = this.text();
         from = "fromJSON";
         break;
-      // @ts-expect-error fall through
       case "text/tab-separated-values":
         if (options?.delimiter === undefined) options = {...options, delimiter: "\t"};
       // fall through
@@ -178,11 +177,11 @@ export abstract class AbstractFile implements FileAttachment {
         }
         break;
     }
-    const [aq, body] = await Promise.all([import("npm:arquero"), request]);
+    const [aq, body] = await Promise.all([import("https://cdn.jsdelivr.net/npm/arquero/+esm"), request]); // prettier-ignore
     return aq[from](body, options);
   }
   async parquet() {
-    const [Arrow, Parquet, buffer] = await Promise.all([import("npm:apache-arrow"), import("npm:parquet-wasm").then(async (Parquet) => (await Parquet.default("https://cdn.jsdelivr.net/npm/parquet-wasm/esm/parquet_wasm_bg.wasm"), Parquet)), this.arrayBuffer()]); // prettier-ignore
+    const [Arrow, Parquet, buffer] = await Promise.all([import("https://cdn.jsdelivr.net/npm/apache-arrow@17.0.0/+esm"), import("https://cdn.jsdelivr.net/npm/parquet-wasm/+esm").then(async (Parquet) => (await Parquet.default("https://cdn.jsdelivr.net/npm/parquet-wasm/esm/parquet_wasm_bg.wasm"), Parquet)), this.arrayBuffer()]); // prettier-ignore
     return Arrow.tableFromIPC(Parquet.readParquet(new Uint8Array(buffer)).intoIPCStream());
   }
   async xml(mimeType: DOMParserSupportedType = "application/xml"): Promise<Document> {

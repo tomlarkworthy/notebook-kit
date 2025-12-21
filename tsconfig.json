@@ -16,5 +16,6 @@
     "noUnusedParameters": true,
     "noFallthroughCasesInSwitch": true
   },
-  "include": ["bin", "src", "types"]
+  "include": ["bin", "src", "types"],
+  "exclude": ["**/*.test.*"]
 }

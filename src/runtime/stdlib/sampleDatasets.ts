@@ -28,6 +28,6 @@ async function text(url: string) {
 }
 
 async function csv(url: string, typed: boolean) {
-  const [contents, d3] = await Promise.all([text(url), import("npm:d3-dsv")]);
+  const [contents, d3] = await Promise.all([text(url), import("https://cdn.jsdelivr.net/npm/d3-dsv/+esm")]); // prettier-ignore
   return d3.csvParse(contents, typed && d3.autoType);
 }

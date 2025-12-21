@@ -1,6 +1,6 @@
-import {Icon} from "npm:leaflet";
+import {Icon} from "https://cdn.jsdelivr.net/npm/leaflet/+esm";
 
-export * from "npm:leaflet";
+export * from "https://cdn.jsdelivr.net/npm/leaflet/+esm";
 
 Icon.Default.imagePath = "https://cdn.jsdelivr.net/npm/leaflet/dist/images/";
 

@@ -1,4 +1,4 @@
-import * as duckdb from "npm:@duckdb/duckdb-wasm";
+import * as duckdb from "https://cdn.jsdelivr.net/npm/@duckdb/duckdb-wasm@1.29.0/+esm";
 
 // Adapted from https://observablehq.com/@cmudig/duckdb-client
 // Copyright 2021 CMU Data Interaction Group
@@ -32,13 +32,11 @@ import * as duckdb from "npm:@duckdb/duckdb-wasm";
 const bundles = {
   mvp: {
     mainModule: "https://cdn.jsdelivr.net/npm/@duckdb/duckdb-wasm@1.29.0/dist/duckdb-mvp.wasm",
-    mainWorker:
-      "https://cdn.jsdelivr.net/npm/@duckdb/duckdb-wasm@1.29.0/dist/duckdb-browser-mvp.worker.js"
+    mainWorker: "https://cdn.jsdelivr.net/npm/@duckdb/duckdb-wasm@1.29.0/dist/duckdb-browser-mvp.worker.js" // prettier-ignore
   },
   eh: {
     mainModule: "https://cdn.jsdelivr.net/npm/@duckdb/duckdb-wasm@1.29.0/dist/duckdb-eh.wasm",
-    mainWorker:
-      "https://cdn.jsdelivr.net/npm/@duckdb/duckdb-wasm@1.29.0/dist/duckdb-browser-eh.worker.js"
+    mainWorker: "https://cdn.jsdelivr.net/npm/@duckdb/duckdb-wasm@1.29.0/dist/duckdb-browser-eh.worker.js" // prettier-ignore
   }
 };
 const bundle = duckdb.selectBundle(bundles);
@@ -325,13 +323,13 @@ async function insertArrowTable(database, name, table, options) {
 async function insertArqueroTable(database, name, source) {
   // TODO When we have stdlib versioning and can upgrade Arquero to version 5,
   // we can then call source.toArrow() directly, with insertArrowTable()
-  const arrow = await import("npm:apache-arrow");
+  const arrow = await import("https://cdn.jsdelivr.net/npm/apache-arrow@17.0.0/+esm");
   const table = arrow.tableFromIPC(source.toArrowBuffer());
   return await insertArrowTable(database, name, table);
 }
 
 async function insertArray(database, name, array, options) {
-  const arrow = await import("npm:apache-arrow");
+  const arrow = await import("https://cdn.jsdelivr.net/npm/apache-arrow@17.0.0/+esm");
   const table = arrow.tableFromJSON(array);
   return await insertArrowTable(database, name, table, options);
 }

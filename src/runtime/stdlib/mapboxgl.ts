@@ -1,4 +1,4 @@
-export {default} from "npm:mapbox-gl";
+export {default} from "https://cdn.jsdelivr.net/npm/mapbox-gl/+esm";
 
 const link = document.createElement("link");
 link.href = "https://cdn.jsdelivr.net/npm/mapbox-gl/dist/mapbox-gl.css";

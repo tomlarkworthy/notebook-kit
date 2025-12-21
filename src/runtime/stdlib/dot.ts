@@ -1,4 +1,4 @@
-import {instance} from "npm:@viz-js/viz";
+import {instance} from "https://cdn.jsdelivr.net/npm/@viz-js/viz/+esm";
 import type {RawTemplateRenderer} from "./template.js";
 
 const viz = await instance();
