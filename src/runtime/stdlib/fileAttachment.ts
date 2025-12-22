@@ -158,6 +158,7 @@ export abstract class AbstractFile implements FileAttachment {
         request = this.text();
         from = "fromJSON";
         break;
+      // @ts-expect-error fall through
       case "text/tab-separated-values":
         if (options?.delimiter === undefined) options = {...options, delimiter: "\t"};
       // fall through
