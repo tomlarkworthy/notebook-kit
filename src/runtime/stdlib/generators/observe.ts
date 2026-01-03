@@ -1,5 +1,6 @@
-export async function* observe<T>(initialize: (change: (value: T) => void) => unknown) {
+export function observe<T>(initialize: (change: (value: T) => void) => unknown): AsyncGenerator<T, void, unknown> {
   let resolve: ((value: T) => void) | undefined;
+  let reject: ((error: Error) => void) | undefined;
   let value: T | undefined;
   let stale = false;
 
@@ -7,7 +8,7 @@ export async function* observe<T>(initialize: (change: (value: T) => void) => un
     value = x;
     if (resolve) {
       resolve(x);
-      resolve = undefined;
+      resolve = reject = undefined;
     } else {
       stale = true;
     }
@@ -22,13 +23,42 @@ export async function* observe<T>(initialize: (change: (value: T) => void) => un
     );
   }
 
-  try {
-    while (true) {
-      yield stale ? ((stale = false), value as T) : new Promise<T>((_) => (resolve = _));
-    }
-  } finally {
-    if (dispose != null) {
-      dispose();
-    }
-  }
+  return {
+    next(): Promise<IteratorResult<T, void>> {
+      return stale
+        ? ((stale = false), Promise.resolve({ done: false as const, value: value as T }))
+        : new Promise<T>((res, rej) => ((resolve = res), (reject = rej))).then((v) => ({
+            done: false as const,
+            value: v,
+          }));
+    },
+    return(): Promise<IteratorResult<T, void>> {
+      // Reject pending promises so no-one is left hanging
+      if (reject) {
+        reject(new Error("Generator returned"));
+        resolve = reject = undefined;
+      }
+      if (dispose != null) {
+        (dispose as () => void)();
+      }
+      return Promise.resolve({ done: true as const, value: undefined });
+    },
+    throw(e?: unknown): Promise<IteratorResult<T, void>> {
+      // Reject pending promises
+      if (reject) {
+        reject(e instanceof Error ? e : new Error(String(e)));
+        resolve = reject = undefined;
+      }
+      if (dispose != null) {
+        (dispose as () => void)();
+      }
+      return Promise.resolve({ done: true as const, value: undefined });
+    },
+    [Symbol.asyncIterator]() {
+      return this;
+    },
+    async [Symbol.asyncDispose]() {
+      await this.return();
+    },
+  };
 }
