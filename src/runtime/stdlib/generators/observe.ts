@@ -1,6 +1,8 @@
-export function observe<T>(initialize: (change: (value: T) => void) => unknown): AsyncGenerator<T, void, unknown> {
+export function observe<T>(
+  initialize: (change: (value: T) => void) => unknown
+): AsyncGenerator<T, void, unknown> {
   let resolve: ((value: T) => void) | undefined;
-  let reject: ((error: Error) => void) | undefined;
+  let reject: ((error: unknown) => void) | undefined;
   let value: T | undefined;
   let stale = false;
 
@@ -23,6 +25,7 @@ export function observe<T>(initialize: (change: (value: T) => void) => unknown):
     );
   }
 
+  // @ts-expect-error AsyncGenerator requires [Symbol.asyncDispose] but Safari doesn't support it
   return {
     next(): Promise<IteratorResult<T, void>> {
       return stale
@@ -46,7 +49,7 @@ export function observe<T>(initialize: (change: (value: T) => void) => unknown):
     throw(e?: unknown): Promise<IteratorResult<T, void>> {
       // Reject pending promises
       if (reject) {
-        reject(e instanceof Error ? e : new Error(String(e)));
+        reject(e);
         resolve = reject = undefined;
       }
       if (dispose != null) {
@@ -56,9 +59,6 @@ export function observe<T>(initialize: (change: (value: T) => void) => unknown):
     },
     [Symbol.asyncIterator]() {
       return this;
-    },
-    async [Symbol.asyncDispose]() {
-      await this.return();
     },
   };
 }
