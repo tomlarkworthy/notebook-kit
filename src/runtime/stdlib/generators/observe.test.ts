@@ -11,6 +11,7 @@ describe("observe", () => {
   });
 
   it("rejects pending promise on return", async () => {
+    // Needed semantic for serialized variable reevaluation
     const o = observe<number>(() => {});
     const pending = o.next();
     await o.return();
@@ -22,7 +23,6 @@ describe("observe", () => {
       change(1);
     });
     expect((await o.next()).value).toBe(1);
-    // No pending promise, so return should complete without error
     const result = await o.return();
     expect(result.done).toBe(true);
   });
