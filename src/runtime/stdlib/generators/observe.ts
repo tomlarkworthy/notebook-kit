@@ -25,7 +25,6 @@ export function observe<T>(
     );
   }
 
-  // @ts-expect-error AsyncGenerator requires [Symbol.asyncDispose] but Safari doesn't support it
   return {
     next(): Promise<IteratorResult<T, void>> {
       return stale
@@ -60,5 +59,5 @@ export function observe<T>(
     [Symbol.asyncIterator]() {
       return this;
     },
-  };
+  } as AsyncGenerator<T, void, unknown>;
 }
