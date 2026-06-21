@@ -309,7 +309,7 @@ exports[`transpiles Observable JavaScript import-withs 1`] = `
 {
   "autodisplay": false,
   "body": "async (__variable) => {
-const {color} = await (import("https://api.observablehq.com/d/2d6bf7be248d66f3.js?v=4").then((_) => {
+const {color} = await (import("https://api.observablehq.com/d/2d6bf7be248d66f3.js?v=4&resolutions=0000000000000000@0").then((_) => {
   const module = __variable._module._runtime.module(_.default).derive([], __variable._module);
   const outputs = new Map(Array.from(__variable._outputs, (v) => [v._name, v]));
   outputs.get("color")?.import("color", module);
@@ -335,7 +335,7 @@ exports[`transpiles Observable JavaScript import-withs 2`] = `
 {
   "autodisplay": false,
   "body": "async (__variable) => {
-const {color} = await (import("https://api.observablehq.com/d/2d6bf7be248d66f3.js?v=4").then((_) => {
+const {color} = await (import("https://api.observablehq.com/d/2d6bf7be248d66f3.js?v=4&resolutions=0000000000000000@0").then((_) => {
   const module = __variable._module._runtime.module(_.default).derive(["foo"], __variable._module);
   const outputs = new Map(Array.from(__variable._outputs, (v) => [v._name, v]));
   outputs.get("color")?.import("color", module);
@@ -361,7 +361,7 @@ exports[`transpiles Observable JavaScript import-withs 3`] = `
 {
   "autodisplay": false,
   "body": "async (__variable) => {
-const {color} = await (import("https://api.observablehq.com/d/2d6bf7be248d66f3.js?v=4").then((_) => {
+const {color} = await (import("https://api.observablehq.com/d/2d6bf7be248d66f3.js?v=4&resolutions=0000000000000000@0").then((_) => {
   const module = __variable._module._runtime.module(_.default).derive([{name: "foo", alias: "bar"}], __variable._module);
   const outputs = new Map(Array.from(__variable._outputs, (v) => [v._name, v]));
   outputs.get("color")?.import("color", module);
@@ -387,7 +387,7 @@ exports[`transpiles Observable JavaScript import-withs 4`] = `
 {
   "autodisplay": false,
   "body": "async (__variable) => {
-const {color: red} = await (import("https://api.observablehq.com/d/2d6bf7be248d66f3.js?v=4").then((_) => {
+const {color: red} = await (import("https://api.observablehq.com/d/2d6bf7be248d66f3.js?v=4&resolutions=0000000000000000@0").then((_) => {
   const module = __variable._module._runtime.module(_.default).derive(["foo"], __variable._module);
   const outputs = new Map(Array.from(__variable._outputs, (v) => [v._name, v]));
   outputs.get("red")?.import("color", "red", module);
@@ -413,7 +413,7 @@ exports[`transpiles Observable JavaScript import-withs of views and mutables 1`]
 {
   "autodisplay": false,
   "body": "async (__variable) => {
-const {color, viewof$color} = await (import("https://api.observablehq.com/d/2d6bf7be248d66f3.js?v=4").then((_) => {
+const {color, viewof$color} = await (import("https://api.observablehq.com/d/2d6bf7be248d66f3.js?v=4&resolutions=0000000000000000@0").then((_) => {
   const module = __variable._module._runtime.module(_.default).derive([{name: "foo", alias: "bar"}], __variable._module);
   const outputs = new Map(Array.from(__variable._outputs, (v) => [v._name, v]));
   outputs.get("color")?.import("color", module);
@@ -441,7 +441,7 @@ exports[`transpiles Observable JavaScript import-withs of views and mutables 2`]
 {
   "autodisplay": false,
   "body": "async (__variable) => {
-const {color} = await (import("https://api.observablehq.com/d/2d6bf7be248d66f3.js?v=4").then((_) => {
+const {color} = await (import("https://api.observablehq.com/d/2d6bf7be248d66f3.js?v=4&resolutions=0000000000000000@0").then((_) => {
   const module = __variable._module._runtime.module(_.default).derive(["foo", "viewof foo"], __variable._module);
   const outputs = new Map(Array.from(__variable._outputs, (v) => [v._name, v]));
   outputs.get("color")?.import("color", module);
@@ -467,7 +467,7 @@ exports[`transpiles Observable JavaScript import-withs of views and mutables 3`]
 {
   "autodisplay": false,
   "body": "async (__variable) => {
-const {color} = await (import("https://api.observablehq.com/d/2d6bf7be248d66f3.js?v=4").then((_) => {
+const {color} = await (import("https://api.observablehq.com/d/2d6bf7be248d66f3.js?v=4&resolutions=0000000000000000@0").then((_) => {
   const module = __variable._module._runtime.module(_.default).derive([{name: "foo", alias: "bar"}, {name: "viewof foo", alias: "viewof bar"}], __variable._module);
   const outputs = new Map(Array.from(__variable._outputs, (v) => [v._name, v]));
   outputs.get("color")?.import("color", module);
@@ -493,7 +493,7 @@ exports[`transpiles Observable JavaScript import-withs of views and mutables 4`]
 {
   "autodisplay": false,
   "body": "async (__variable) => {
-const {color} = await (import("https://api.observablehq.com/d/2d6bf7be248d66f3.js?v=4").then((_) => {
+const {color} = await (import("https://api.observablehq.com/d/2d6bf7be248d66f3.js?v=4&resolutions=0000000000000000@0").then((_) => {
   const module = __variable._module._runtime.module(_.default).derive(["foo", "mutable foo"], __variable._module);
   const outputs = new Map(Array.from(__variable._outputs, (v) => [v._name, v]));
   outputs.get("color")?.import("color", module);
@@ -519,7 +519,7 @@ exports[`transpiles Observable JavaScript import-withs of views and mutables 5`]
 {
   "autodisplay": false,
   "body": "async (__variable) => {
-const {color} = await (import("https://api.observablehq.com/d/2d6bf7be248d66f3.js?v=4").then((_) => {
+const {color} = await (import("https://api.observablehq.com/d/2d6bf7be248d66f3.js?v=4&resolutions=0000000000000000@0").then((_) => {
   const module = __variable._module._runtime.module(_.default).derive([{name: "foo", alias: "bar"}, {name: "mutable foo", alias: "mutable bar"}], __variable._module);
   const outputs = new Map(Array.from(__variable._outputs, (v) => [v._name, v]));
   outputs.get("color")?.import("color", module);
@@ -545,7 +545,7 @@ exports[`transpiles Observable JavaScript import-withs of views and mutables 6`]
 {
   "autodisplay": false,
   "body": "async (__variable) => {
-const {color} = await (import("https://api.observablehq.com/d/2d6bf7be248d66f3.js?v=4").then((_) => {
+const {color} = await (import("https://api.observablehq.com/d/2d6bf7be248d66f3.js?v=4&resolutions=0000000000000000@0").then((_) => {
   const module = __variable._module._runtime.module(_.default).derive(["foo", "bar", "viewof bar", {name: "baz", alias: "qux"}, {name: "mutable baz", alias: "mutable qux"}], __variable._module);
   const outputs = new Map(Array.from(__variable._outputs, (v) => [v._name, v]));
   outputs.get("color")?.import("color", module);
@@ -571,7 +571,7 @@ exports[`transpiles Observable JavaScript imports 1`] = `
 {
   "autodisplay": false,
   "body": "async (__variable) => {
-const {color} = await (import("https://api.observablehq.com/d/2d6bf7be248d66f3.js?v=4").then((_) => {
+const {color} = await (import("https://api.observablehq.com/d/2d6bf7be248d66f3.js?v=4&resolutions=0000000000000000@0").then((_) => {
   const module = __variable._module._runtime.module(_.default);
   const outputs = new Map(Array.from(__variable._outputs, (v) => [v._name, v]));
   outputs.get("color")?.import("color", module);
@@ -597,7 +597,7 @@ exports[`transpiles Observable JavaScript imports 2`] = `
 {
   "autodisplay": false,
   "body": "async (__variable) => {
-const {color} = await (import("https://api.observablehq.com/d/2d6bf7be248d66f3@173.js?v=4").then((_) => {
+const {color} = await (import("https://api.observablehq.com/d/2d6bf7be248d66f3@173.js?v=4&resolutions=0000000000000000@0").then((_) => {
   const module = __variable._module._runtime.module(_.default);
   const outputs = new Map(Array.from(__variable._outputs, (v) => [v._name, v]));
   outputs.get("color")?.import("color", module);
@@ -623,7 +623,7 @@ exports[`transpiles Observable JavaScript imports of mutables 1`] = `
 {
   "autodisplay": false,
   "body": "async (__variable) => {
-const {foo, mutable$foo} = await (import("https://api.observablehq.com/d/2d6bf7be248d66f3.js?v=4").then((_) => {
+const {foo, mutable$foo} = await (import("https://api.observablehq.com/d/2d6bf7be248d66f3.js?v=4&resolutions=0000000000000000@0").then((_) => {
   const module = __variable._module._runtime.module(_.default);
   const outputs = new Map(Array.from(__variable._outputs, (v) => [v._name, v]));
   outputs.get("foo")?.import("foo", module);
@@ -651,7 +651,7 @@ exports[`transpiles Observable JavaScript imports of mutables 2`] = `
 {
   "autodisplay": false,
   "body": "async (__variable) => {
-const {foo: bar, mutable$foo: mutable$bar} = await (import("https://api.observablehq.com/d/2d6bf7be248d66f3.js?v=4").then((_) => {
+const {foo: bar, mutable$foo: mutable$bar} = await (import("https://api.observablehq.com/d/2d6bf7be248d66f3.js?v=4&resolutions=0000000000000000@0").then((_) => {
   const module = __variable._module._runtime.module(_.default);
   const outputs = new Map(Array.from(__variable._outputs, (v) => [v._name, v]));
   outputs.get("bar")?.import("foo", "bar", module);
@@ -679,7 +679,7 @@ exports[`transpiles Observable JavaScript imports of views 1`] = `
 {
   "autodisplay": false,
   "body": "async (__variable) => {
-const {figure, rotation, viewof$rotation} = await (import("https://api.observablehq.com/@rreusser/drawing-3d-objects-with-svg.js?v=4").then((_) => {
+const {figure, rotation, viewof$rotation} = await (import("https://api.observablehq.com/@rreusser/drawing-3d-objects-with-svg.js?v=4&resolutions=0000000000000000@0").then((_) => {
   const module = __variable._module._runtime.module(_.default);
   const outputs = new Map(Array.from(__variable._outputs, (v) => [v._name, v]));
   outputs.get("figure")?.import("figure", module);
@@ -709,7 +709,7 @@ exports[`transpiles Observable JavaScript imports of views 2`] = `
 {
   "autodisplay": false,
   "body": "async (__variable) => {
-const {figure, rotation: rot, viewof$rotation: viewof$rot} = await (import("https://api.observablehq.com/@rreusser/drawing-3d-objects-with-svg.js?v=4").then((_) => {
+const {figure, rotation: rot, viewof$rotation: viewof$rot} = await (import("https://api.observablehq.com/@rreusser/drawing-3d-objects-with-svg.js?v=4&resolutions=0000000000000000@0").then((_) => {
   const module = __variable._module._runtime.module(_.default);
   const outputs = new Map(Array.from(__variable._outputs, (v) => [v._name, v]));
   outputs.get("figure")?.import("figure", module);
@@ -987,7 +987,7 @@ exports[`transpiles static imports with {type: 'observable'} 1`] = `
 {
   "autodisplay": false,
   "body": "async (__variable) => {
-const {color} = await (import("https://api.observablehq.com/d/2d6bf7be248d66f3.js?v=4").then((_) => {
+const {color} = await (import("https://api.observablehq.com/d/2d6bf7be248d66f3.js?v=4&resolutions=0000000000000000@0").then((_) => {
   const module = __variable._module._runtime.module(_.default);
   const outputs = new Map(Array.from(__variable._outputs, (v) => [v._name, v]));
   outputs.get("color")?.import("color", module);
@@ -1013,7 +1013,7 @@ exports[`transpiles static imports with {type: 'observable'} 2`] = `
 {
   "autodisplay": false,
   "body": "async (__variable) => {
-const {color} = await (import("https://api.observablehq.com/d/2d6bf7be248d66f3@173.js?v=4").then((_) => {
+const {color} = await (import("https://api.observablehq.com/d/2d6bf7be248d66f3@173.js?v=4&resolutions=0000000000000000@0").then((_) => {
   const module = __variable._module._runtime.module(_.default);
   const outputs = new Map(Array.from(__variable._outputs, (v) => [v._name, v]));
   outputs.get("color")?.import("color", module);
@@ -1039,7 +1039,7 @@ exports[`transpiles static imports with {type: 'observable'} 3`] = `
 {
   "autodisplay": false,
   "body": "async (__variable) => {
-const {Scrubber} = await (import("https://api.observablehq.com/@mbostock/scrubber.js?v=4").then((_) => {
+const {Scrubber} = await (import("https://api.observablehq.com/@mbostock/scrubber.js?v=4&resolutions=0000000000000000@0").then((_) => {
   const module = __variable._module._runtime.module(_.default);
   const outputs = new Map(Array.from(__variable._outputs, (v) => [v._name, v]));
   outputs.get("Scrubber")?.import("Scrubber", module);
@@ -1065,7 +1065,7 @@ exports[`transpiles static imports with {type: 'observable'} 4`] = `
 {
   "autodisplay": false,
   "body": "async (__variable) => {
-const {Scrubber} = await (import("https://api.observablehq.com/@mbostock/scrubber@255.js?v=4").then((_) => {
+const {Scrubber} = await (import("https://api.observablehq.com/@mbostock/scrubber@255.js?v=4&resolutions=0000000000000000@0").then((_) => {
   const module = __variable._module._runtime.module(_.default);
   const outputs = new Map(Array.from(__variable._outputs, (v) => [v._name, v]));
   outputs.get("Scrubber")?.import("Scrubber", module);
@@ -1091,7 +1091,7 @@ exports[`transpiles static imports with {type: 'observable'} 5`] = `
 {
   "autodisplay": false,
   "body": "async (__variable) => {
-const {viewof$rotation} = await (import("https://api.observablehq.com/@rreusser/drawing-3d-objects-with-svg.js?v=4").then((_) => {
+const {viewof$rotation} = await (import("https://api.observablehq.com/@rreusser/drawing-3d-objects-with-svg.js?v=4&resolutions=0000000000000000@0").then((_) => {
   const module = __variable._module._runtime.module(_.default);
   const outputs = new Map(Array.from(__variable._outputs, (v) => [v._name, v]));
   outputs.get("viewof$rotation")?.import("viewof rotation", "viewof$rotation", module);
@@ -1174,7 +1174,7 @@ exports[`transpiles static observable: imports 1`] = `
 {
   "autodisplay": false,
   "body": "async (__variable) => {
-const {color} = await (import("https://api.observablehq.com/d/2d6bf7be248d66f3.js?v=4").then((_) => {
+const {color} = await (import("https://api.observablehq.com/d/2d6bf7be248d66f3.js?v=4&resolutions=0000000000000000@0").then((_) => {
   const module = __variable._module._runtime.module(_.default);
   const outputs = new Map(Array.from(__variable._outputs, (v) => [v._name, v]));
   outputs.get("color")?.import("color", module);
@@ -1200,7 +1200,7 @@ exports[`transpiles static observable: imports 2`] = `
 {
   "autodisplay": false,
   "body": "async (__variable) => {
-const {color} = await (import("https://api.observablehq.com/d/2d6bf7be248d66f3@173.js?v=4").then((_) => {
+const {color} = await (import("https://api.observablehq.com/d/2d6bf7be248d66f3@173.js?v=4&resolutions=0000000000000000@0").then((_) => {
   const module = __variable._module._runtime.module(_.default);
   const outputs = new Map(Array.from(__variable._outputs, (v) => [v._name, v]));
   outputs.get("color")?.import("color", module);
@@ -1226,7 +1226,7 @@ exports[`transpiles static observable: imports 3`] = `
 {
   "autodisplay": false,
   "body": "async (__variable) => {
-const {Scrubber} = await (import("https://api.observablehq.com/@mbostock/scrubber.js?v=4").then((_) => {
+const {Scrubber} = await (import("https://api.observablehq.com/@mbostock/scrubber.js?v=4&resolutions=0000000000000000@0").then((_) => {
   const module = __variable._module._runtime.module(_.default);
   const outputs = new Map(Array.from(__variable._outputs, (v) => [v._name, v]));
   outputs.get("Scrubber")?.import("Scrubber", module);
@@ -1252,7 +1252,7 @@ exports[`transpiles static observable: imports 4`] = `
 {
   "autodisplay": false,
   "body": "async (__variable) => {
-const {Scrubber} = await (import("https://api.observablehq.com/@mbostock/scrubber@255.js?v=4").then((_) => {
+const {Scrubber} = await (import("https://api.observablehq.com/@mbostock/scrubber@255.js?v=4&resolutions=0000000000000000@0").then((_) => {
   const module = __variable._module._runtime.module(_.default);
   const outputs = new Map(Array.from(__variable._outputs, (v) => [v._name, v]));
   outputs.get("Scrubber")?.import("Scrubber", module);
@@ -1278,7 +1278,7 @@ exports[`transpiles static observable: imports 5`] = `
 {
   "autodisplay": false,
   "body": "async (__variable) => {
-const {viewof$rotation} = await (import("https://api.observablehq.com/@rreusser/drawing-3d-objects-with-svg.js?v=4").then((_) => {
+const {viewof$rotation} = await (import("https://api.observablehq.com/@rreusser/drawing-3d-objects-with-svg.js?v=4&resolutions=0000000000000000@0").then((_) => {
   const module = __variable._module._runtime.module(_.default);
   const outputs = new Map(Array.from(__variable._outputs, (v) => [v._name, v]));
   outputs.get("viewof$rotation")?.import("viewof rotation", "viewof$rotation", module);

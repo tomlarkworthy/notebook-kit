@@ -6,6 +6,26 @@ import {flatMapImportSpecifiers, getImportedName, getLocalName} from "../imports
 
 const CODE_DOLLAR = 36;
 
+// Observable notebook imports are fetched from the Observable API. When a
+// request omits a `resolutions` argument, the API stamps the *importing*
+// notebook's own id into the transitive import URLs it returns. Two top-level
+// imports that share a transitive dependency therefore receive that dependency
+// under different resolution contexts -> different URLs -> the browser module
+// loader instantiates it twice, cloning the reactive dataflow graph instead of
+// sharing it. Pinning every observable import to one stable resolution context
+// makes the API propagate a single context, so shared transitive modules dedupe.
+// Version 0 is a deliberate sentinel: real notebook versions start at 1, and the
+// fake id has no lockfile, so this resolves transitive deps to latest. The API
+// requires a positive-or-zero integer version (e.g. @-1 is rejected).
+const STABLE_RESOLUTIONS = "0000000000000000@0";
+
+/** Pin an Observable API import URL to one shared resolution context (see above). */
+export function addStableResolutions(url: string): string {
+  if (!url.startsWith("https://api.observablehq.com/")) return url;
+  if (/[?&]resolutions=/.test(url)) return url;
+  return `${url}${url.includes("?") ? "&" : "?"}resolutions=${STABLE_RESOLUTIONS}`;
+}
+
 /** If specifier is an observable: protocol import, resolves it. */
 export function resolveObservableImport(specifier: string): string {
   if (!specifier.startsWith("observable:")) return specifier;
@@ -30,7 +50,7 @@ export function renderObservableImport(
   inputs: string[]
 ): string {
   if (!inputs.includes("@variable")) inputs.push("@variable");
-  return `(import(${JSON.stringify(source)}).then((_) => {
+  return `(import(${JSON.stringify(addStableResolutions(source))}).then((_) => {
   const module = __variable._module._runtime.module(_.default)${
     "injections" in node ? `.derive([${renderObservableInjections(node)}], __variable._module)` : ""
   };
